@@ -2,15 +2,11 @@
 
 #include <unordered_map>
 
-enum CommandType 
-{
-};
-
 enum EventType
 {
 };
 
-class Event
+class GameEvent
 {
 public:
 
@@ -25,7 +21,7 @@ public:
 class ICommand
 {
 public:
-    virtual void execute(Event) = 0;
+    virtual void execute(GameEvent event) = 0;
     virtual void undo() = 0;
     ~ICommand() {}
 };
