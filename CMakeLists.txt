@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(Tactics VERSION 1.0.0)
+project(Tactics VERSION 1.0.1)
 
 find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
 
@@ -27,5 +27,4 @@ target_include_directories(tactics PUBLIC include/qt)
 target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
 
-add_subdirectory(lib/eventpp)
-target_link_libraries(tactics eventpp)
+include_directories(include)
