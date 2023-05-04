@@ -1,30 +1,31 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(Tactics VERSION 1.0.0)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-
-# set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_executable(tactics main.cpp src/chooseopponentform.cpp src/entranceform.cpp src/gameform.cpp src/mainwindow.cpp
-src/chooseopponentform.ui src/entranceform.ui src/gameform.ui src/mainwindow.ui)
-target_include_directories(tactics PUBLIC include)
 find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
-target_link_libraries(tactics sfml-window sfml-graphics)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+set(QT_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+qt_wrap_cpp(Tactics_H ${QT_HEADER_DIR}/chooseopponentform.h ${QT_HEADER_DIR}/entranceform.h ${QT_HEADER_DIR}/gameform.h ${QT_HEADER_DIR}/mainwindow.h)
 
-qt5_use_modules(tactics Widgets)
+set(QT_UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ui)
+set(QT_UI_COMPILED ${CMAKE_CURRENT_BINARY_DIR}/ui)
+execute_process(COMMAND mkdir ${QT_UI_COMPILED})
+
+list(APPEND QT_WINDOWS "entranceform" "chooseopponentform" "gameform" "mainwindow")
+foreach(QT_UI IN LISTS QT_WINDOWS)
+    set(QT_UI_OUT_FILE "${QT_UI_COMPILED}/ui_${QT_UI}.h")
+    set(QT_UIS_FULL_NAME_WITH_EXT "${QT_UI_DIR}/${QT_UI}.ui")
+    execute_process(COMMAND uic -o ${QT_UI_OUT_FILE} ${QT_UIS_FULL_NAME_WITH_EXT})
+endforeach()
+
+set(QT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(Tactics_SRC main.cpp ${QT_SRC_DIR}/chooseopponentform.cpp ${QT_SRC_DIR}/entranceform.cpp ${QT_SRC_DIR}/gameform.cpp ${QT_SRC_DIR}/mainwindow.cpp)
+
+add_executable(tactics ${Tactics_SRC} ${Tactics_H})
+target_include_directories(tactics PUBLIC include)
+target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
+target_link_libraries(tactics Qt5::Widgets)
 
 add_subdirectory(lib/eventpp)
 target_link_libraries(tactics eventpp)
-
-target_link_libraries(tactics Qt5::Widgets)
-
-# add_subdirectory(lib/qt-widgets)
-# target_link_libraries(tactics qt-widgets)
-
-
-
