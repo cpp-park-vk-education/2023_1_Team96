@@ -8,10 +8,8 @@ enum EventType
     SFML_ON_MOUSE_CLICK
 };
 
-class GameEvent
+struct GameEvent
 {
-public:
-
     EventType type;
 
     union
@@ -23,8 +21,9 @@ public:
 class ICommand
 {
 public:
-    virtual void execute(GameEvent event) = 0;
-    virtual void undo() = 0;
+    virtual void Execute(GameEvent event) = 0;
+    virtual void Undo() = 0;
+
     ~ICommand() {}
 };
 
@@ -36,9 +35,9 @@ public:
         bindings[type] = cmd;
     };
 
-    virtual void handle() = 0;
+    virtual void Handle() = 0;
 
-    void deleteBIndings(EventType type);
+    void DeleteBindings(EventType type) {}
 
     virtual ~InputHandler() {}
 
@@ -52,6 +51,10 @@ private:
     /* data */
 public:
     MoveCommand(/* args */) {}
+
+    void Execute(GameEvent event) override {}
+    void Undo() override {}
+
     ~MoveCommand() {}
 };
 
@@ -61,6 +64,10 @@ private:
     /* data */
 public:
     AttactCommand(/* args */) {}
+
+    void Execute(GameEvent event) override {}
+    void Undo() override {}
+
     ~AttactCommand() {}
 };
 
@@ -70,6 +77,10 @@ private:
     /* data */
 public:
     ChooseCommand(/* args */) {}
+
+    void Execute(GameEvent event) override {}
+    void Undo() override {}
+
     ~ChooseCommand() {}
 };
 
@@ -79,6 +90,10 @@ private:
     /* data */
 public:
     CreateCommand(/* args */) {}
+
+    void Execute(GameEvent event) override {}
+    void Undo() override {}
+
     ~CreateCommand() {}
 };
 
@@ -88,6 +103,10 @@ private:
     /* data */
 public:
     StartCommand (/* args */) {}
+
+    void Execute(GameEvent event) override {}
+    void Undo() override {}
+
     ~StartCommand () {}
 };
 
@@ -97,5 +116,9 @@ private:
     /* data */
 public:
     StepCommand(/* args */) {}
+
+    void Execute(GameEvent event) override {}
+    void Undo() override {}
+
     ~StepCommand() {}
 };

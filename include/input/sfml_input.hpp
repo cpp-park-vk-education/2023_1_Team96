@@ -1,15 +1,15 @@
 #include "input_handler.hpp"
 #include <SFML/Window.hpp>
 
-class SfmlWindowHandler : public InputHandler
+class SFMLWindowHandler : public InputHandler
 {
 private:
     sf::Window &window;
 
 public:
-    SfmlWindowHandler(sf::Window &window) : window(window) {}
+    SFMLWindowHandler(sf::Window &window) : window(window) {}
 
-    void handle() override
+    void Handle() override
     {
         sf::Event event;
         while (window.pollEvent(event))
@@ -26,5 +26,5 @@ public:
         }
     };
     
-    ~SfmlWindowHandler() {}
+    ~SFMLWindowHandler() {}
 };
