@@ -6,6 +6,9 @@ class IModel;
 
 enum ModelType
 {
+    UNIT,
+    KING,
+    STONE
 };
 
 class IMonitor
