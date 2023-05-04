@@ -23,8 +23,12 @@ set(QT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/qt)
 set(Tactics_SRC main.cpp ${QT_SRC_DIR}/chooseopponentform.cpp ${QT_SRC_DIR}/entranceform.cpp ${QT_SRC_DIR}/gameform.cpp ${QT_SRC_DIR}/mainwindow.cpp)
 
 add_executable(tactics ${Tactics_SRC} ${Tactics_H})
-target_include_directories(tactics PUBLIC include/qt)
 target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
+target_include_directories(tactics PUBLIC include/qt)
+
+find_package(Boost REQUIRED COMPONENTS system thread date_time regex serialization)
+target_link_libraries(tactics Boost::system Boost::thread Boost::date_time Boost::regex Boost::serialization)
+target_include_directories(tactics PUBLIC include/server)
 
 include_directories(include)
