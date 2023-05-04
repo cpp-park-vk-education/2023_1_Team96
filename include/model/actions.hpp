@@ -24,12 +24,12 @@ class IAction {
 
 class AttackAcion : public IAction {
    private:
-    int range_;
-    int power_;
+    int attack_range_;
+    int attack_power_;
 
    public:
     AttackAcion(std::shared_ptr<GameObject> owner, int range, int power)
-        : IAction(owner), range_(range), power_(power) {}
+        : IAction(owner), attack_range_(range), attack_power_(power) {}
 
     void DoAction(std::any params) override {}
     bool CanDoAction(std::any params) const override { return false; }

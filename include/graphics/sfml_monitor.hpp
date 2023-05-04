@@ -5,52 +5,45 @@
 #include "graphics/graphics.hpp"
 
 using std::string;
-
-class ISfmlModelFactory : public IModelFactory
-{
-public:
-    virtual ~ISfmlModelFactory() {}
-};
-
 class SFMLWindow : public IMonitor
 {
 public:
     SFMLWindow(const string &l_title, const sf::Vector2u &l_size)
     {
         Setup(l_title, l_size);
-    };
+    }
 
     ~SFMLWindow()
     {
         Destroy();
-    };
+    }
 
-    void Prepare()
+    void Prepare() override
     {
         m_window.clear();
-    };
+    }
 
-    void Draw()
+    void Draw() override
     {
         m_window.display();
-    };
+    }
 
     bool IsOpen()
     {
         return m_window.isOpen();
-    };
+    }
 
     sf::Vector2u GetWindowSize()
     {
         return m_windowSize;
-    };
+    }
 
-    bool isEnd()
+    bool isEnd() override
     {
         return !m_window.isOpen();
-    };
+    }
 
-    std::unique_ptr<IModel> getModel(ModelType type) {};
+    std::unique_ptr<IModel> getModel(ModelType type) override {}
 
     sf::RenderWindow& getWindow()
     {
@@ -63,7 +56,7 @@ private:
         m_windowTitle = l_title;
         m_windowSize = l_size;
         Create();
-    };
+    }
 
     void Create()
     {
@@ -81,25 +74,41 @@ private:
     bool m_isFullscreen;
 };
 
-class SfmlModel
+class SFMLSprite
 {
+private:
+    sf::Shape* shape;
+    sf::Texture* texture;
+    sf::Vector2f position;
+    sf::Color color;
 public:
+    void SetPosition(sf::Vector2f pos) {}
+};
+class SFMLModel : public IModel
+{
+private:
     sf::RenderWindow& target;
+    SFMLSprite sprite;
+public:
+    void Draw() const override {}
+    void Move(sf::Vector2u pos) const override {}
+    void Attack(sf::Vector2u pos) const override {}
+    void GetDamage(int damage) const override {}
 };
 
-class SfmlUnitModel
+class SFMLUnitModel : public SFMLModel
 {
 private:
 
 };
 
-class SfmlKingModel
+class SFMLKingModel : public SFMLModel
 {
 private:
     
 };
 
-class SfmlStoneModel
+class SFMLStoneModel : public SFMLModel
 {
 private:
     

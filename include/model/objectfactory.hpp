@@ -9,3 +9,6 @@ struct IObjectFactory {
 
     virtual ~IObjectFactory() {}
 };
+
+class UnitFactory : public IObjectFactory {};
+class StoneFactory : public IObjectFactory {};
