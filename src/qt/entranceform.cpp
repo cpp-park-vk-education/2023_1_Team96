@@ -1,4 +1,4 @@
-#include "entranceform.h"
+#include "qt/entranceform.h"
 #include "ui_entranceform.h"
 
 #include <QDebug>

@@ -1,4 +1,4 @@
-#include "gameform.h"
+#include "qt/gameform.h"
 #include "ui_gameform.h"
 #include <QPushButton>
 

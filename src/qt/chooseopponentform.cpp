@@ -1,4 +1,4 @@
-#include "chooseopponentform.h"
+#include "qt/chooseopponentform.h"
 #include "ui_chooseopponentform.h"
 
 

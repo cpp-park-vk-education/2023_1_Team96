@@ -1,8 +1,8 @@
-#include "mainwindow.h"
+#include "qt/mainwindow.h"
 #include "ui_mainwindow.h"
-#include "entranceform.h"
-#include "chooseopponentform.h"
-#include "gameform.h"
+#include "qt/entranceform.h"
+#include "qt/chooseopponentform.h"
+#include "qt/gameform.h"
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QStackedWidget>
