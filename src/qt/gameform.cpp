@@ -7,7 +7,7 @@ GameForm::GameForm(QWidget *parent) :
     ui(new Ui::GameForm)
 {
     QPalette Pal(palette());
-    QPixmap bkgnd("/home/uliana/Pictures/gamefon.jpg");
+    QPixmap bkgnd( QString(QCoreApplication::applicationDirPath() + "/../static/gamefon.jpg") );
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
     QPalette p = palette(); //copy current, not create new
     p.setBrush(QPalette::Background, bkgnd);
@@ -16,6 +16,7 @@ GameForm::GameForm(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->finishButton, SIGNAL(clicked()), this, SLOT(finish()));
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(onStartTimerClick()));
+    connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
 }
 
 GameForm::~GameForm()
@@ -32,7 +33,7 @@ void GameForm::finish()
 
 void GameForm::resizeEvent(QResizeEvent *evt)
 {
-    QPixmap bkgnd("/home/uliana/Pictures/gamefon.jpg");
+    QPixmap bkgnd( QString(QCoreApplication::applicationDirPath() + "/../static/gamefon.jpg") );
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
     QPalette p = palette(); //copy current, not create new
     p.setBrush(QPalette::Background, bkgnd);
@@ -60,6 +61,10 @@ void GameForm::onStartTimerClick() {
 
 void GameForm::onTimerTimeout(){
     emit ui->switchButton->clicked();
+}
+
+void GameForm::stopTimer(){
+    ui->lcd->setVisible(false);
 }
 
 

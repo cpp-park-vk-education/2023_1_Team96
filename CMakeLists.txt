@@ -5,7 +5,7 @@ find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-set(QT_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(QT_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/qt)
 qt_wrap_cpp(Tactics_H ${QT_HEADER_DIR}/chooseopponentform.h ${QT_HEADER_DIR}/entranceform.h ${QT_HEADER_DIR}/gameform.h ${QT_HEADER_DIR}/mainwindow.h)
 
 set(QT_UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ui)
@@ -19,11 +19,11 @@ foreach(QT_UI IN LISTS QT_WINDOWS)
     execute_process(COMMAND uic -o ${QT_UI_OUT_FILE} ${QT_UIS_FULL_NAME_WITH_EXT})
 endforeach()
 
-set(QT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(QT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/qt)
 set(Tactics_SRC main.cpp ${QT_SRC_DIR}/chooseopponentform.cpp ${QT_SRC_DIR}/entranceform.cpp ${QT_SRC_DIR}/gameform.cpp ${QT_SRC_DIR}/mainwindow.cpp)
 
 add_executable(tactics ${Tactics_SRC} ${Tactics_H})
-target_include_directories(tactics PUBLIC include)
+target_include_directories(tactics PUBLIC include/qt)
 target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
 

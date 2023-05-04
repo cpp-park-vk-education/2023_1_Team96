@@ -24,6 +24,7 @@ protected:
 private slots:
     void onStartTimerClick();
     void onTimerTimeout();
+    void stopTimer();
 
 public slots:
     void finish();

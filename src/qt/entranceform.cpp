@@ -9,7 +9,7 @@ EntranceForm::EntranceForm(QWidget *parent) :
     ui(new Ui::EntranceForm)
 {
     QPalette Pal(palette());
-    QPixmap bkgnd( QString(QCoreApplication::applicationDirPath() + "/../testproject7/enterfon.png"));      //"/home/uliana/Pictures/enterfon.png"
+    QPixmap bkgnd( QString(QCoreApplication::applicationDirPath() + "/../static/enterfon.png") );      //"/home/uliana/Pictures/enterfon.png"
     //qDebug() << QString(QDir::currentPath() + "/../enterfon.png");
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
     QPalette p = palette(); //copy current, not create new
@@ -38,7 +38,7 @@ void EntranceForm::nextwidget(){
 
 void EntranceForm::resizeEvent(QResizeEvent *evt)
 {
-    QPixmap bkgnd("/home/uliana/Pictures/enterfon.png");
+    QPixmap bkgnd( QString(QCoreApplication::applicationDirPath() + "/../static/enterfon.png") );
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
     QPalette p = palette(); //copy current, not create new
     p.setBrush(QPalette::Background, bkgnd);
