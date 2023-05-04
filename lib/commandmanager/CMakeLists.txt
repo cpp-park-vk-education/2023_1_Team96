@@ -1,3 +1,0 @@
-add_library(command_manager INTERFACE)
-target_include_directories(command_manager INTERFACE include)
-target_link_libraries(command_manager INTERFACE eventpp)
