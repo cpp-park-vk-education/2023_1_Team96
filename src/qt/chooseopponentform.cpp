@@ -9,7 +9,7 @@ ChooseOpponentForm::ChooseOpponentForm(QWidget *parent) :
     QPalette Pal(palette());
     QPixmap bkgnd( QString(QCoreApplication::applicationDirPath() + "/../static/enterfon.png") );
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
-    QPalette p = palette(); //copy current, not create new
+    QPalette p = palette(); 
     p.setBrush(QPalette::Background, bkgnd);
     this->setAutoFillBackground(true);
     this->setPalette(p);
@@ -31,9 +31,9 @@ void ChooseOpponentForm::resizeEvent(QResizeEvent *evt)
 {
     QPixmap bkgnd( QString(QCoreApplication::applicationDirPath() + "/../static/enterfon.png") );
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
-    QPalette p = palette(); //copy current, not create new
+    QPalette p = palette(); 
     p.setBrush(QPalette::Background, bkgnd);
     setPalette(p);
 
-    QWidget::resizeEvent(evt); //call base implementation
+    QWidget::resizeEvent(evt); 
 }
