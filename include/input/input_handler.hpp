@@ -4,6 +4,8 @@
 
 enum EventType
 {
+    QT_ON_BUTTON_CLICK,
+    SFML_ON_MOUSE_CLICK
 };
 
 class GameEvent
