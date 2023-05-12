@@ -1,9 +1,15 @@
 #pragma once
 
+#include <iostream>
 #include "objectfactory.hpp"
 #include "objectrepository.hpp"
 #include "graphics/graphics.hpp"
 #include "input/input_handler.hpp"
+
+using sf::Vector2u;
+using std::move;
+using std::shared_ptr;
+using std::unique_ptr;
 
 enum GameState
 {
@@ -15,38 +21,132 @@ enum GameState
 class Game
 {
 private:
-    std::unique_ptr<IObjectRepository> object_repo_;
-    std::unique_ptr<IMonitor> monitor_;
-    std::unique_ptr<InputHandler> handler_;
-    std::shared_ptr<Player> first_player_;
-    std::shared_ptr<Player> second_player_;
+    unique_ptr<IObjectRepository> object_repo_;
+    unique_ptr<IMonitor> monitor_;
+    unique_ptr<InputHandler> handler_;
+    shared_ptr<Player> first_player_;
+    shared_ptr<Player> second_player_;
+    ICommand *last;
     GameState state;
 
-    void CreateObject(std::shared_ptr<Player> player, sf::Vector2u top_left_cords,
-                      IModel model, IObjectFactory* factory);
-
-    void handleInput()
+    class CreateUnit : public ICommand
     {
-        // обработка ввода и выполнение соответствующей команды
+    private:
+        Game &game;
+        sf::Vector2i last;
+    public:
+        CreateUnit(Game &_game) : game(_game) {}
+
+        void Execute(GameEvent event) override
+        {
+            game.object_repo_->createUnit(event.unit_type, std::move(game.monitor_->getModel(ModelType::B_MODEL)));
+            last = game.object_repo_->getCurrent();
+            game.last = this;
+        }
+
+        void Undo() override 
+        {
+            game.object_repo_->deleteUnit((sf::Vector2u)last);
+        }
+    };
+
+    class ChooseCommand : public ICommand
+    {
+    private:
+        Game &game;
+        sf::Vector2i last = {-1, -1};
+
+    public:
+        ChooseCommand(Game &_game) : game(_game) {}
+
+        void Execute(GameEvent event) override
+        {
+            sf::Vector2i pos = sf::Vector2i{event.cords.x / 63, event.cords.y / 63};
+            if (pos == game.object_repo_->getCurrent())
+            {
+                last = pos;
+                game.object_repo_->resetCurrent();
+                std::cout << "unchoose!" << std::endl;
+
+                game.handler_->DeleteBindings(UNIT_NUM);
+
+                game.last = this;
+                return;
+            }
+
+            last = {-1, -1};
+            game.object_repo_->setCurrent(pos);
+            std::cout << "choose!" << std::endl;
+
+            game.handler_->AddBinding(EventType::UNIT_NUM, new CreateUnit(game));
+
+            game.last = this;
+        }
+
+        void Undo() override
+        {
+            if (last.x == -1)
+            {
+                game.object_repo_->resetCurrent();
+                last = {-1, -1};
+            }
+            else
+            {
+                game.object_repo_->setCurrent(last);
+                last = {-1, -1};
+            }
+
+            game.last = nullptr;
+        }
+    };
+
+    class CancelCommand : public ICommand
+    {
+    private:
+        Game &game;
+
+    public:
+        CancelCommand(Game &_game) : game(_game) {}
+
+        void Execute(GameEvent event) override
+        {
+            if (game.last)
+                game.last->Undo();
+        }
+
+        void Undo() override {}
+    };
+
+    void
+    handleInput()
+    {
         handler_->Handle();
     }
 
-    void update(){
-        // обновление игрового состояния, не зависящее от ввода
+    void update()
+    {
     }
 
     void render()
     {
         monitor_->Prepare();
-        // отрисовка моделей всех нужных объектов
+
+        object_repo_->draw();
+
         monitor_->Draw();
     }
 
 public:
-    Game(std::unique_ptr<IMonitor> monitor,
-         std::unique_ptr<InputHandler> handler) : monitor_(std::move(monitor)),
-                                                  handler_(std::move(handler))
-    {}
+    Game(unique_ptr<IMonitor> monitor,
+         unique_ptr<InputHandler> handler) : monitor_(move(monitor)),
+                                             handler_(move(handler)),
+                                             state(GameState::PREPARE)
+    {
+        object_repo_ = std::make_unique<Field>(Vector2u{9, 15}, move(monitor_->getFieldModel(Vector2u{5, 6})));
+        handler_->AddBinding(EventType::CELL, new ChooseCommand(*this));
+        handler_->AddBinding(EventType::CANCEL, new CancelCommand(*this));
+        // handler_->AddBinding()
+    }
 
     void StartGame()
     {
@@ -59,7 +159,7 @@ public:
         }
     }
 
-    inline const std::unique_ptr<IObjectRepository> &Repository() const
+    inline const unique_ptr<IObjectRepository> &Repository() const
     {
         return object_repo_;
     }

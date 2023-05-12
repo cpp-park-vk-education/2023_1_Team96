@@ -1,11 +1,16 @@
-#include "qt/mainwindow.h"
+#include "model/gamemodel.hpp"
+#include "graphics/sfml_monitor.hpp"
+#include "input/sfml_input.hpp"
 
-#include <QApplication>
-
-int main(int argc, char *argv[])
+int main()
 {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
+    std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000,600});
+
+    std::unique_ptr<SFMLWindowHandler> handler = std::make_unique<SFMLWindowHandler>(monitor->getWindow());
+
+    Game game(std::move(monitor), std::move(handler));
+
+    game.StartGame();
+
+    return 0;
 }

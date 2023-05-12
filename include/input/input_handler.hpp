@@ -1,11 +1,13 @@
-#pragma once
+    #pragma once
 
 #include <unordered_map>
+#include <SFML/Graphics.hpp>
 
 enum EventType
 {
-    QT_ON_BUTTON_CLICK,
-    SFML_ON_MOUSE_CLICK
+    CELL,
+    CANCEL,
+    UNIT_NUM,
 };
 
 struct GameEvent
@@ -14,7 +16,8 @@ struct GameEvent
 
     union
     {
-        /*event data*/
+        sf::Vector2u cords;
+        UnitType unit_type;
     };
 };
 
@@ -35,15 +38,29 @@ public:
         bindings[type] = cmd;
     };
 
+    void ChangeBinding(EventType type, ICommand* cmd)
+    {
+        bindings[type] = cmd;
+    };
+
     virtual void Handle() = 0;
 
-    void DeleteBindings(EventType type) {}
+    void DeleteBindings(EventType type) 
+    {
+        bindings[type] = nullptr;
+    }
+
+    void Execute(GameEvent event) 
+    {
+        bindings[event.type]->Execute(event);
+    }
 
     virtual ~InputHandler() {}
 
 protected:
     std::unordered_map<EventType, ICommand*> bindings;
 };
+
 
 class MoveCommand : public ICommand
 {
