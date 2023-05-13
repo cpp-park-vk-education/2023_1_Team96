@@ -1,8 +1,8 @@
 #include "model/gameobject.hpp"
 
-IModel& GameObject::getModel() { return *model_; }
+IModel& GameObject::GetModel() { return *model_; }
 
-void GameObject::draw() { model_->Draw(); }
+void GameObject::Draw() { model_->Draw(); }
 
 inline const std::shared_ptr<Player>& GameObject::GetPlayer() const {
     return player_;

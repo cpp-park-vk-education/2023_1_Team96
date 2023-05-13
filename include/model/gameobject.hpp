@@ -27,10 +27,12 @@ class GameObject {
     GameObject() : player_(), model_(nullptr), pos_(-1, -1), actions_() {}
     GameObject(std::shared_ptr<Player> player, std::unique_ptr<IModel> model,
                sf::Vector2u pos)
-        : player_(player), model_(std::move(model)), pos_(pos), actions_() {}
+        : player_(player), model_(std::move(model)), pos_(pos), actions_() {
+        *model_.Move(pos_);
+    }
 
-    IModel& getModel();
-    void draw();
+    IModel& GetModel();
+    void Draw();
 
     inline const std::shared_ptr<Player>& GetPlayer() const;
     inline sf::Vector2u Pos() const;
@@ -114,13 +116,11 @@ class MoveAction : public IAction {
     int move_range_;
 
    public:
-    MoveAction(GameObject& owner, sf::Vector2u pos, int move_range)
-        : IAction(owner), move_range_(move_range) {
-        owner_.getModel().Move(owner_.Pos());
-    }
+    MoveAction(GameObject& owner, int move_range)
+        : IAction(owner), move_range_(move_range) {}
 
     void DoAction(std::any params) override {
-        owner_.getModel().Move(std::any_cast<sf::Vector2u>(params));
+        owner_.GetModel().Move(std::any_cast<sf::Vector2u>(params));
     }
 
     bool CanDoAction(std::any params) const override {
