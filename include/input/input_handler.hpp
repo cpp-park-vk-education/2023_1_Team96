@@ -1,7 +1,8 @@
-    #pragma once
+#pragma once
 
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
+#include "utility/common.h"
 
 enum EventType
 {
@@ -16,7 +17,7 @@ struct GameEvent
 
     union
     {
-        sf::Vector2u cords;
+        sf::Vector2i cords;
         UnitType unit_type;
     };
 };
@@ -59,83 +60,4 @@ public:
 
 protected:
     std::unordered_map<EventType, ICommand*> bindings;
-};
-
-
-class MoveCommand : public ICommand
-{
-private:
-    /* data */
-public:
-    MoveCommand(/* args */) {}
-
-    void Execute(GameEvent event) override {}
-    void Undo() override {}
-
-    ~MoveCommand() {}
-};
-
-class AttactCommand : public ICommand
-{
-private:
-    /* data */
-public:
-    AttactCommand(/* args */) {}
-
-    void Execute(GameEvent event) override {}
-    void Undo() override {}
-
-    ~AttactCommand() {}
-};
-
-class ChooseCommand : public ICommand
-{
-private:
-    /* data */
-public:
-    ChooseCommand(/* args */) {}
-
-    void Execute(GameEvent event) override {}
-    void Undo() override {}
-
-    ~ChooseCommand() {}
-};
-
-class CreateCommand : public ICommand
-{
-private:
-    /* data */
-public:
-    CreateCommand(/* args */) {}
-
-    void Execute(GameEvent event) override {}
-    void Undo() override {}
-
-    ~CreateCommand() {}
-};
-
-class StartCommand : public ICommand
-{
-private:
-    /* data */
-public:
-    StartCommand (/* args */) {}
-
-    void Execute(GameEvent event) override {}
-    void Undo() override {}
-
-    ~StartCommand () {}
-};
-
-class StepCommand : public ICommand
-{
-private:
-    /* data */
-public:
-    StepCommand(/* args */) {}
-
-    void Execute(GameEvent event) override {}
-    void Undo() override {}
-
-    ~StepCommand() {}
 };

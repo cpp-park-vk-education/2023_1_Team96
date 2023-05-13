@@ -1,24 +1,38 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp> 
 #include "graphics/graphics.hpp"
 
 using std::string;
 using sf::Vector2u;
 
-class SFMLFieldModel : public IFieldModel
+class SFMLModel : public IModel
+{
+protected:
+    sf::RenderWindow &target;
+
+public:
+    SFMLModel(sf::RenderWindow &_target) : target(_target){}
+
+    virtual void draw() override = 0;
+
+    virtual ~SFMLModel() {}
+};
+
+class SFMLFieldModel : public IFieldModel, public SFMLModel
 {
 private:
-    sf::RenderWindow &window;
-    vector<string> tile_map;
+    std::vector<string> tile_map;
     sf::Vector2u size;
     sf::Sprite s_map;
     sf::Texture tile_set;
     sf::Vector2i current;
 
 public:
-    SFMLFieldModel(sf::RenderWindow &_window) : window(_window)
+    SFMLFieldModel(sf::RenderWindow &_window, uint cols, uint rows) : SFMLModel(_window)
     {
 
         sf::Image map_image;
@@ -29,20 +43,22 @@ public:
         tile_map = {
             "000000000000000",
             "0             0",
+            "0  h          0",
             "0             0",
-            "0             0",
-            "0             0",
+            "0        h    0",
             "0             0",
             "0             0",
             "0             0",
             "000000000000000",
             };
 
-        size = Vector2u{tile_map[0].length(), tile_map.size()};
+        unsigned int w = tile_map[0].length();
+        unsigned int h = tile_map.size();
+        size = Vector2u{w,h};
         resetCurrent();
     }
 
-    void render()
+    void draw() override
     {
         for (int i = 0; i < size.y; ++i)
         {
@@ -53,11 +69,15 @@ public:
                 switch (tile)
                 {
                 case ' ':
-                    s_map.setTextureRect(sf::IntRect(26, 218, 63, 63));
+                    s_map.setTextureRect(sf::IntRect(26, 219, 63, 63));
                     break;
 
                 case '0':
                     s_map.setTextureRect(sf::IntRect(26, 298, 63, 63));
+                    break;
+
+                case 'h':
+                    s_map.setTextureRect(sf::IntRect(106, 219, 63, 63));
                     break;
 
                 default:
@@ -74,7 +94,7 @@ public:
                 }
 
                 s_map.setPosition(j*63, i*63);
-                window.draw(s_map);
+                target.draw(s_map);
 
                 s_map.setColor(sf::Color::White);
 
@@ -95,20 +115,7 @@ public:
 
 };
 
-class SFMLModel : public IModel
-{
-protected:
-    sf::RenderWindow &target;
-
-public:
-    SFMLModel(sf::RenderWindow &_target) : target(_target){}
-    void Draw() const override {}
-    void Move(sf::Vector2u pos) override {}
-    void Attack(sf::Vector2u pos) const override {}
-    void GetDamage(int damage) const override {}
-};
-
-class SFMLUnitModel : public SFMLModel
+class SFMLUnitModel : public SFMLModel, public IObjectModel
 {
 private:
     sf::Sprite sprite;
@@ -126,7 +133,7 @@ public:
         // sprite.setScale(10);
     }
 
-    void Draw() const override
+    void draw() override
     {
         std::cout << "draw!" << std::endl;
         target.draw(sprite);
@@ -137,10 +144,12 @@ public:
         sprite.setPosition(pos.x*63, pos.y*63);
     }
 
+    void Attack(sf::Vector2u pos) override {}
+    void GetDamage(int damage) override {}
 
 };
 
-class SFMLWindow : public IMonitor
+class SFMLWindow
 {
 public:
     SFMLWindow(const string &l_title, const sf::Vector2u &l_size)
@@ -153,12 +162,12 @@ public:
         Destroy();
     }
 
-    void Prepare() override
+    void Prepare()
     {
         m_window.clear();
     }
 
-    void Draw() override
+    void Draw()
     {
         m_window.display();
     }
@@ -173,12 +182,12 @@ public:
         return m_windowSize;
     }
 
-    bool isEnd() override
+    bool isEnd()
     {
         return !m_window.isOpen();
     }
 
-    std::unique_ptr<IModel> getModel(ModelType type) override 
+    std::unique_ptr<IObjectModel> getModel(ModelType type) 
     {
         switch (type)
         {
@@ -188,11 +197,12 @@ public:
 
             break;
         }
+        return nullptr;
     }
 
-    std::unique_ptr<IFieldModel> getFieldModel(sf::Vector2u size)
+    std::unique_ptr<SFMLFieldModel> getFieldModel(uint cols, uint rows)
     {
-        return std::make_unique<SFMLFieldModel>(m_window);
+        return std::make_unique<SFMLFieldModel>(m_window, cols, rows);
     };
 
     sf::RenderWindow &getWindow()
@@ -222,15 +232,4 @@ private:
     sf::RenderWindow m_window;
     sf::Vector2u m_windowSize;
     std::string m_windowTitle;
-    bool m_isFullscreen;
-};
-
-class SFMLKingModel : public SFMLModel
-{
-private:
-};
-
-class SFMLStoneModel : public SFMLModel
-{
-private:
 };
