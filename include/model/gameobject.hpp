@@ -36,6 +36,7 @@ class GameObject {
 
     inline const std::shared_ptr<Player>& GetPlayer() const;
     inline sf::Vector2u Pos() const;
+    inline void SetPos(sf::Vector2u pos);
 
     inline void AddAction(ActionType name, std::unique_ptr<IAction> action);
 
@@ -120,7 +121,9 @@ class MoveAction : public IAction {
         : IAction(owner), move_range_(move_range) {}
 
     void DoAction(std::any params) override {
-        owner_.GetModel().Move(std::any_cast<sf::Vector2u>(params));
+        sf::Vector2u new_pos = std::any_cast<sf::Vector2u>(params);
+        owner_.SetPos(new_pos);
+        owner_.GetModel().Move(new_pos);
     }
 
     bool CanDoAction(std::any params) const override {
