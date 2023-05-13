@@ -4,11 +4,26 @@
 
 #include "gameobject.hpp"
 
-struct IObjectFactory {
-    virtual std::unique_ptr<GameObject> CreateObject() = 0;
+struct IObjectActionsFactory {
+    virtual void AddObjectActions(std::shared_ptr<GameObject> obj) = 0;
 
-    virtual ~IObjectFactory() {}
+    virtual ~IObjectActionsFactory() {}
 };
 
-class UnitFactory : public IObjectFactory {};
-class StoneFactory : public IObjectFactory {};
+class UnitFactory : public IObjectActionsFactory {
+   private:
+    int attack_power_, attack_range_;
+    int hp_, armor_;
+    int move_range_;
+
+   public:
+    UnitFactory(int attack_power, int attack_range, int hp, int armor,
+                int move_range)
+        : attack_power_(attack_power),
+          attack_range_(attack_range),
+          hp_(hp),
+          armor_(armor),
+          move_range_(move_range) {}
+
+    void AddObjectActions(std::shared_ptr<GameObject> obj) override;
+};
