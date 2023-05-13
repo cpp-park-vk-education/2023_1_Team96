@@ -11,8 +11,11 @@ struct IObjectRepository {
     using std::shared_ptr;
 
     virtual bool Add(shared_ptr<GameObject> obj) = 0;
+
+    virtual std::vector<shared_ptr<GameObject>>&& GetAll() = 0;
     virtual shared_ptr<GameObject> GetByCords(sf::Vector2u cords) = 0;
     virtual shared_ptr<GameObject> GetByPlayer(Player player) = 0;
+
     virtual bool Delete(shared_ptr<GameObject> obj) = 0;
     virtual bool DeleteByCords(sf::Vector2u cords) = 0;
 
@@ -33,8 +36,11 @@ class ObjectRepository : public IObjectRepository {
     }
 
     bool Add(shared_ptr<GameObject> obj) override;
+
+    vector<shared_ptr<GameObject>>&& GetAll() override;
     shared_ptr<GameObject> GetByCords(sf::Vector2u cords) override;
     shared_ptr<GameObject> GetByPlayer(Player player) override;
+
     bool Delete(shared_ptr<GameObject> obj) override;
     bool DeleteByCords(sf::Vector2u cords) override;
 };

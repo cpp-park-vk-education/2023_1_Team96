@@ -1,5 +1,7 @@
 #include "model/objectrepository.hpp"
 
+#include "objectrepository.hpp"
+
 bool ObjectRepository::Add(shared_ptr<GameObject> obj) {
     int x_cord = obj->Pos().x;
     int y_cord = obj->Pos().y;
@@ -8,6 +10,17 @@ bool ObjectRepository::Add(shared_ptr<GameObject> obj) {
 
     objects_[y_cord][x_cord] = obj;
     return true;
+}
+
+vector<shared_ptr<GameObject>>&& ObjectRepository::GetAll() {
+    vector<shared_ptr<GameObject>> objects;
+    for (int y = 0; y < h_; ++y) {
+        for (int x = 0; x < w_; ++x) {
+            if (objects_[y][x] != nullptr) objects.push_back(objects_[y][x]);
+        }
+    }
+
+    return objects;
 }
 
 shared_ptr<GameObject> ObjectRepository::GetByCords(sf::Vector2u cords) {
