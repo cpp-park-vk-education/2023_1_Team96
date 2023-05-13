@@ -118,35 +118,11 @@ class Game {
 
     void update() {}
 
-    void render() {
-        monitor_->Prepare();
-
-        field_->draw();
-
-        monitor_->Draw();
-    }
+    void render();
 
    public:
-    Game(unique_ptr<SFMLWindow> monitor, unique_ptr<SFMLWindowHandler> handler)
-        : monitor_(move(monitor)),
-          handler_(move(handler)),
-          state(GameState::PREPARE) {
-        uint rows = 9;
-        uint cols = 15;
-        unique_ptr<SFMLFieldModel> field_model =
-            monitor_->getFieldModel(rows, cols);
-        field_ = std::make_unique<Field>(rows, cols, move(field_model));
+    
+    Game(unique_ptr<SFMLWindow> monitor, unique_ptr<SFMLWindowHandler> handler);
 
-        handler_->AddBinding(EventType::CELL, new ChooseCommand(*this));
-        handler_->AddBinding(EventType::CANCEL, new CancelCommand(*this));
-        // handler_->AddBinding(EventType::MOVE_TURN, new TurnCommand(*this));
-    }
-
-    void StartGame() {
-        while (!monitor_->isEnd()) {
-            handleInput();
-            update();
-            render();
-        }
-    }
+    void StartGame();
 };

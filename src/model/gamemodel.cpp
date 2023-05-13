@@ -1,8 +1,32 @@
-#include "gamemodel.hpp"
+#include "model/gamemodel.hpp"
 
-void Game::ConfigCommandManager() {}
+Game::Game(unique_ptr<SFMLWindow> monitor,
+           unique_ptr<SFMLWindowHandler> handler)
+    : monitor_(move(monitor)),
+      handler_(move(handler)),
+      state(GameState::PREPARE) {
+    uint rows = 9;
+    uint cols = 15;
+    unique_ptr<SFMLFieldModel> field_model =
+        monitor_->getFieldModel(rows, cols);
+    field_ = std::make_unique<Field>(rows, cols, move(field_model));
 
-void Game::CreateObject(std::shared_ptr<Player> player, Cell top_left_cords,
-                        IModel model, IObjectFactory* factory) {}
+    handler_->AddBinding(EventType::CELL, new ChooseCommand(*this));
+    handler_->AddBinding(EventType::CANCEL, new CancelCommand(*this));
+}
 
-void Game::StartGame() {}
+void Game::StartGame() {
+    while (!monitor_->isEnd()) {
+        handleInput();
+        update();
+        render();
+    }
+}
+
+void Game::render() {
+    monitor_->Prepare();
+
+    field_->draw();
+
+    monitor_->Draw();
+}

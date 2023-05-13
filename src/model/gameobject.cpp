@@ -1,9 +1,6 @@
 #include "model/gameobject.hpp"
 
-sf::Vector2u GameObject::Pos() const { return pos_; }
-
-void GameObject::AddAction(ActionType name,
-                                  std::unique_ptr<IAction> action) {
+void GameObject::AddAction(ActionType name, std::unique_ptr<IAction> action) {
     actions_.insert(std::make_pair(name, std::move(action)));
 }
 
@@ -18,4 +15,12 @@ bool GameObject::CanDoAction(ActionType action, std::any params) {
         return actions_[action]->CanDoAction(params);
     else
         return false;
+}
+
+GameObject::GameObject()
+    : player_(), model_(nullptr), pos_(-1, -1), actions_() {}
+GameObject::GameObject(std::shared_ptr<Player> player,
+                       std::unique_ptr<IObjectModel> model, sf::Vector2u pos)
+    : player_(player), model_(std::move(model)), pos_(pos), actions_() {
+    model_->Move(pos_);
 }

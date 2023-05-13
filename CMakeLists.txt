@@ -21,7 +21,10 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 # set(QT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/qt)
 # set(Tactics_SRC main.cpp ${QT_SRC_DIR}/chooseopponentform.cpp ${QT_SRC_DIR}/entranceform.cpp ${QT_SRC_DIR}/gameform.cpp ${QT_SRC_DIR}/mainwindow.cpp)
-set(Tactics_SRC main.cpp src/model/gameobject.cpp)
+file(GLOB MODEL "src/model/*.cpp")
+file(GLOB GRAPHICS "src/graphics/*.cpp")
+file(GLOB INPUT "src/input/*.cpp")
+set(Tactics_SRC main.cpp ${MODEL} ${GRAPHICS} ${INPUT})
 
 # add_executable(tactics ${Tactics_SRC} ${Tactics_H})
 add_executable(tactics ${Tactics_SRC})
