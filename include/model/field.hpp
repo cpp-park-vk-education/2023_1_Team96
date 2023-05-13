@@ -1,6 +1,7 @@
 #pragma once
 
 #include "objectrepository.hpp"
+#include "objectfactory.hpp"
 
 class Field {
    private:
