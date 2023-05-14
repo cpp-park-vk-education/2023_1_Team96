@@ -1,16 +1,26 @@
-#include "gameobject.hpp"
+#include "model/gameobject.hpp"
 
-inline const std::shared_ptr<Player>& GameObject::GetPlayer() const {
-    return player_;
-}
-
-inline void GameObject::AddAction(ActionType name,
-                                  std::unique_ptr<IAction> action) {
+void GameObject::AddAction(ActionType name, std::unique_ptr<IAction> action) {
     actions_.insert(std::make_pair(name, std::move(action)));
 }
 
-void GameObject::DoAction(ActionType action, std::any params) {}
+void GameObject::DoAction(ActionType action, std::any params) {
+    actions_[action]->DoAction(params);
+}
 
-bool GameObject::CanDoAction(ActionType action, std::any params) const {
-    return false;
+bool GameObject::CanDoAction(ActionType action, std::any params) {
+    bool has_action = actions_.find(action) != actions_.end();
+
+    if (has_action)
+        return actions_[action]->CanDoAction(params);
+    else
+        return false;
+}
+
+GameObject::GameObject()
+    : player_(), model_(nullptr), pos_(-1, -1), actions_() {}
+GameObject::GameObject(std::shared_ptr<Player> player,
+                       std::unique_ptr<IObjectModel> model, sf::Vector2u pos)
+    : player_(player), model_(std::move(model)), pos_(pos), actions_() {
+    model_->Move(pos_);
 }

@@ -1,30 +1,17 @@
-#include "input_handler.hpp"
+#pragma once
+
 #include <SFML/Window.hpp>
 
-class SFMLWindowHandler : public InputHandler
-{
-private:
+#include "input/input_handler.hpp"
+
+class SFMLWindowHandler : public InputHandler {
+   private:
     sf::Window &window;
 
-public:
+   public:
     SFMLWindowHandler(sf::Window &window) : window(window) {}
 
-    void Handle() override
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            switch (event.type)
-            {
-            case sf::Event::Closed:
-                window.close();
-                break;
-            default:
+    void Handle();
 
-                break;
-            }
-        }
-    };
-    
     ~SFMLWindowHandler() {}
 };

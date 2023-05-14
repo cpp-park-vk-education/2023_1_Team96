@@ -1,116 +1,90 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 #include <iostream>
 #include <string>
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
+
 #include "graphics/graphics.hpp"
 
+using sf::Vector2u;
 using std::string;
-class SFMLWindow : public IMonitor
-{
-public:
-    SFMLWindow(const string &l_title, const sf::Vector2u &l_size)
-    {
-        Setup(l_title, l_size);
-    }
 
-    ~SFMLWindow()
-    {
-        Destroy();
-    }
+class SFMLModel : public IModel {
+   protected:
+    sf::RenderWindow &target;
 
-    void Prepare() override
-    {
-        m_window.clear();
-    }
+   public:
+    SFMLModel(sf::RenderWindow &_target) : target(_target) {}
 
-    void Draw() override
-    {
-        m_window.display();
-    }
+    virtual void draw() override = 0;
 
-    bool IsOpen()
-    {
-        return m_window.isOpen();
-    }
+    virtual ~SFMLModel() {}
+};
 
-    sf::Vector2u GetWindowSize()
-    {
-        return m_windowSize;
-    }
+class SFMLFieldModel : public IFieldModel, public SFMLModel {
+   private:
+    std::vector<string> tile_map;
+    sf::Vector2u size;
+    sf::Sprite s_map;
+    sf::Texture tile_set;
+    sf::Vector2i current;
 
-    bool isEnd() override
-    {
-        return !m_window.isOpen();
-    }
+   public:
+    SFMLFieldModel(sf::RenderWindow &_window, uint cols, uint rows);
 
-    std::unique_ptr<IModel> getModel(ModelType type) override {}
+    void draw() override;
 
-    sf::RenderWindow& getWindow()
-    {
-        return m_window;
-    }
-private:
-    void Setup(const std::string &l_title,
-               const sf::Vector2u &l_size)
-    {
-        m_windowTitle = l_title;
-        m_windowSize = l_size;
-        Create();
-    }
+    void setCurrent(sf::Vector2i pos) override { current = pos; };
 
-    void Create()
-    {
-        m_window.create(sf::VideoMode(m_windowSize.x, m_windowSize.y), m_windowTitle);
+    void resetCurrent() override {
+        current.x = -1;
+        current.y = -1;
     }
+};
 
-    void Destroy()
-    {
-        m_window.close();
-    }
+class SFMLUnitModel : public SFMLModel, public IObjectModel {
+   private:
+    sf::Sprite sprite;
+    sf::Texture tile_set;
+
+   public:
+    SFMLUnitModel(sf::RenderWindow &_window);
+
+    void draw() override;
+
+    void Move(sf::Vector2u pos) override;
+
+    void Attack(sf::Vector2u pos) override {}
+    void GetDamage(int damage) override {}
+};
+
+class SFMLWindow {
+   public:
+    SFMLWindow(const string &l_title, const sf::Vector2u &l_size);
+    
+    ~SFMLWindow() { Destroy(); }
+
+    void Prepare() { m_window.clear(); }
+
+    void Draw() { m_window.display(); }
+
+    bool IsOpen() { return m_window.isOpen(); }
+
+    sf::Vector2u GetWindowSize() { return m_windowSize; }
+
+    bool isEnd() { return !m_window.isOpen(); }
+
+    std::unique_ptr<IObjectModel> getModel(ModelType type);
+
+    std::unique_ptr<SFMLFieldModel> getFieldModel(uint cols, uint rows);
+
+    sf::RenderWindow &getWindow() { return m_window; }
+
+   private:
+    void Destroy() { m_window.close(); }
 
     sf::RenderWindow m_window;
     sf::Vector2u m_windowSize;
     std::string m_windowTitle;
-    bool m_isFullscreen;
 };
-
-class SFMLSprite
-{
-private:
-    sf::Shape* shape;
-    sf::Texture* texture;
-    sf::Vector2f position;
-    sf::Color color;
-public:
-    void SetPosition(sf::Vector2f pos) {}
-};
-class SFMLModel : public IModel
-{
-private:
-    sf::RenderWindow& target;
-    SFMLSprite sprite;
-public:
-    void Draw() const override {}
-    void Move(sf::Vector2u pos) const override {}
-    void Attack(sf::Vector2u pos) const override {}
-    void GetDamage(int damage) const override {}
-};
-
-class SFMLUnitModel : public SFMLModel
-{
-private:
-
-};
-
-class SFMLKingModel : public SFMLModel
-{
-private:
-    
-};
-
-class SFMLStoneModel : public SFMLModel
-{
-private:
-    
-};
-
