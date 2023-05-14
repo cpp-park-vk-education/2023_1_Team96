@@ -22,11 +22,14 @@ void SFMLWindowHandler::Handle() {
                     GameEvent ge{CANCEL};
                     bindings[CANCEL]->Execute(ge);
                 }
-
                 if (event.key.code == sf::Keyboard::Num1) {
                     GameEvent ge{UNIT_NUM};
                     ge.unit_type = B;
                     if (bindings[UNIT_NUM]) bindings[UNIT_NUM]->Execute(ge);
+                }
+                if (event.key.code == sf::Keyboard::Enter) {
+                    GameEvent ge{SEND};
+                    if (bindings[SEND]) bindings[SEND]->Execute(ge);
                 }
                 break;
         }
