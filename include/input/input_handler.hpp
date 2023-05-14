@@ -9,6 +9,7 @@ enum EventType
     CELL,
     CANCEL,
     UNIT_NUM,
+    SEND,
 };
 
 struct GameEvent

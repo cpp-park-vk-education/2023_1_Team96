@@ -13,6 +13,7 @@ Game::Game(unique_ptr<SFMLWindow> monitor,
 
     handler_->AddBinding(EventType::CELL, new ChooseCommand(*this));
     handler_->AddBinding(EventType::CANCEL, new CancelCommand(*this));
+    handler_->AddBinding(EventType::SEND, new SendCommand(*this));
 }
 
 void Game::StartGame() {

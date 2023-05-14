@@ -24,3 +24,4 @@ GameObject::GameObject(std::shared_ptr<Player> player,
     : player_(player), model_(std::move(model)), pos_(pos), actions_() {
     model_->Move(pos_);
 }
+
