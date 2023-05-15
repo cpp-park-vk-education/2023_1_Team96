@@ -6,48 +6,10 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
-
+#include "connection.hpp"
 
 using namespace boost::asio;
 using namespace boost::system;
-
-class Connection: public boost::enable_shared_from_this<Connection>, boost::noncopyable 
-{
-    
-private:
-
-    ip::tcp::socket socket_;
-    std::string read_buffer_;
-    std::string write_buffer_;
-
-public:
-    Connection(io_service service);
-    void start();
-    void write(std::string message);
-    void close();
-    void handle_read(error_code& error, size_t bytes_transferred);
-    void handle_write(error_code& error, size_t bytes_transferred);
-    ip::tcp::socket get_socket();
-};
-
-class Client
-{
-
-private:
-
-    ip::tcp::endpoint ep_;
-    io_service service_;
-    Connection connection_;
-    
-public:
-
-    Client(const std::string& address, const std::string& port);
-    void connect();
-    void start();
-    void write(const std::string& message);
-    void close();
-
-};
 
 
 class Server
@@ -64,19 +26,19 @@ public:
     void stop(); // метод, который останавливает сервер и закрывает все активные соединения
 };
 
-class GameServer : public boost::enable_shared_from_this<GameServer>, boost::noncopyable {
-public:
-    GameServer(io_service& service, const std::string& address, const std::string& port);
-    void start_accept();
-    void serialize(std::string message);
+// class GameServer : public boost::enable_shared_from_this<GameServer>, boost::noncopyable {
+// public:
+//     GameServer(io_service& service, const std::string& address, const std::string& port);
+//     void start_accept();
+//     void serialize(std::string message);
     
-private:
-    void handle_accept(const error_code& error);
+// private:
+//     void handle_accept(const error_code& error);
 
-    Server server_;    
-    io_service& service_;
-    std::vector<boost::shared_ptr<Connection>> connections_;
-};
+//     Server server_;    
+//     io_service& service_;
+//     std::vector<boost::shared_ptr<Connection>> connections_;
+// };
 
 
 class Match
@@ -85,7 +47,7 @@ class Match
 private:
     boost::shared_ptr<Connection> player1;
     boost::shared_ptr<Connection> player2;
-    boost::shared_ptr<GameServer> game_server;
+//    boost::shared_ptr<GameServer> game_server;
 };
 
 class Matchmaking
