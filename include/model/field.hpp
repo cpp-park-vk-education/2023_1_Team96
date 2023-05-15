@@ -21,37 +21,27 @@ class Field {
     unique_ptr<SFMLFieldModel> model;
     Vector2i current = {-1, -1};
 
-    bool isValid(Vector2i pos) {
-        if (pos.x < 0 || pos.y < 0) return false;
-        if (pos.y*w + pos.x >= objects.size()) return false;
+    bool IsValidPosition(Vector2i pos) {
+        if (pos.x < 0 || pos.x >= w || pos.y < 0 || pos.y >= h) return false;
         return true;
     }
 
-    uint index(Vector2i pos)
-    {
-        return pos.y*w + pos.x;
-    }
+    uint index(Vector2i pos) { return pos.y * w + pos.x; }
 
    public:
     Field(uint _h, uint _w, unique_ptr<SFMLFieldModel>&& f_model)
         : h(_h), w(_w), objects(_h * _w), model(std::move(f_model)) {}
 
-    bool createUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> model);
+    bool CreateUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> model);
 
-    GameObject* getObject(Vector2i pos)
-    {
-        return objects[index(pos)].get();
-    };
+    GameObject* GetObject(Vector2i pos) { return objects[index(pos)].get(); };
 
-    bool change(Vector2i a, Vector2i b);
+    bool MoveObject(Vector2i from, Vector2i to);
+    void DeleteObject(Vector2u pos);
 
-    void deleteUnit(Vector2u pos);
+    void SetCurrent(Vector2i pos);
+    Vector2i GetCurrent() { return current; };
+    void ResetCurrent();
 
-    void setCurrent(Vector2i pos);
-
-    void resetCurrent();
-
-    Vector2i getCurrent() { return current; };
-
-    void draw();
+    void Draw();
 };

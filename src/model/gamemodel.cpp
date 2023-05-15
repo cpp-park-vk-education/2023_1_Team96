@@ -31,7 +31,7 @@ void Game::StartGame() {
 void Game::render() {
     monitor_->Prepare();
 
-    field_->draw();
+    field_->Draw();
 
     monitor_->Draw();
 }
