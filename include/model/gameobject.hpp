@@ -17,12 +17,15 @@ class GameObject {
     std::map<ActionType, std::unique_ptr<IAction>> actions_;
     sf::Vector2u pos_;
     std::shared_ptr<Player> player_;
+    bool isMine;
     std::unique_ptr<IObjectModel> model_;
 
    public:
     GameObject();
-    GameObject(std::shared_ptr<Player> player,
+    GameObject(std::shared_ptr<Player> player, bool isMine,
                std::unique_ptr<IObjectModel> model, sf::Vector2u pos);
+
+    bool is_mine() { return isMine; }
 
     IObjectModel &getModel() { return *model_; }
 

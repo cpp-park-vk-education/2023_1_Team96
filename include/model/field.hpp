@@ -36,7 +36,7 @@ class Field {
     Field(uint _h, uint _w, unique_ptr<SFMLFieldModel>&& f_model)
         : h(_h), w(_w), objects(_h * _w), model(std::move(f_model)) {}
 
-    bool createUnit(UnitType type, unique_ptr<IObjectModel> model);
+    bool createUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> model);
 
     GameObject* getObject(Vector2i pos)
     {

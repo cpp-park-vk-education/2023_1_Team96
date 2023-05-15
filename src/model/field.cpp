@@ -1,6 +1,6 @@
 #include "model/field.hpp"
 
-bool Field::createUnit(UnitType type, unique_ptr<IObjectModel> model) {
+bool Field::createUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> model) {
 
     Vector2i pos = {current.x, current.y};
 
@@ -8,14 +8,14 @@ bool Field::createUnit(UnitType type, unique_ptr<IObjectModel> model) {
 
     uint i = index(pos);
 
-    if (pos.x >= 7) return false;
+    if (isMine && pos.x >= 7) return false;
 
     if (objects[i] != nullptr) return false;
 
     switch (type) {
         case B:
             objects[i] = std::make_shared<GameObject>(
-                nullptr, std::move(model), Vector2u{pos.x, pos.y});
+                nullptr, isMine, std::move(model), Vector2u{pos.x, pos.y});
             objects[i]->AddAction(
                 ActionType::MOVE,
                 std::move(std::make_unique<MoveAction>(*(objects[i]), 1)));
@@ -58,6 +58,8 @@ bool Field::change(Vector2i a, Vector2i b)
     uint bi = index(b);
 
     if (objects[ai] == nullptr) return false;
+
+    if (!(objects[ai]->is_mine())) return false;
 
     if (objects[bi] != nullptr) return false;
 

@@ -28,11 +28,13 @@ set(Tactics_SRC main.cpp ${MODEL} ${GRAPHICS} ${INPUT})
 
 # add_executable(tactics ${Tactics_SRC} ${Tactics_H})
 add_executable(tactics ${Tactics_SRC})
+add_executable(server server.cpp)
 # target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
 # target_link_libraries(tactics Qt5::Widgets)
 
 # find_package(Boost REQUIRED COMPONENTS system thread date_time regex serialization)
 # target_link_libraries(tactics Boost::system Boost::thread Boost::date_time Boost::regex Boost::serialization)
-target_link_libraries(tactics sfml-window sfml-graphics)
+target_link_libraries(tactics sfml-window sfml-graphics sfml-network)
+target_link_libraries(server sfml-network)
 
 include_directories(include)
