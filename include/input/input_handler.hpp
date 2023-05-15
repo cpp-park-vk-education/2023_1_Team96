@@ -49,7 +49,7 @@ public:
 
     virtual void Handle() = 0;
 
-    void DeleteBindings(EventType type) 
+    void DeleteBinding(EventType type) 
     {
         bindings[type] = nullptr;
     }

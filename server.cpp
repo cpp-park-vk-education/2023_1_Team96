@@ -8,7 +8,7 @@ int main() {
     sf::IpAddress ip = sf::IpAddress::getLocalAddress();
 
     sf::TcpListener listener;
-    listener.listen(6000);
+    listener.listen(6010);
 
     if (listener.accept(first) != sf::Socket::Done) {
         std::cout << "error" << std::endl;

@@ -17,7 +17,7 @@ using std::unique_ptr;
 enum GameState {
     PREPARE,
     STEP,
-    WAIT,
+    WAIT_FOR_POS,
 };
 
 class Game {
@@ -29,6 +29,8 @@ class Game {
     InputHandler *handler_;
     vector<ICommand *> last;
     GameState state;
+
+    void setState(GameState state);
 
     class CreateUnit : public ICommand {
        private:
@@ -46,6 +48,8 @@ class Game {
                 std::move(game.monitor_->getModel(ModelType::B_MODEL)));
             pos = game.field_->GetCurrent();
             game.last.push_back(this);
+
+            game.handler_->ChangeBinding(UNIT_NUM, new CreateUnit(game, isMine));
         }
 
         void Undo() override { game.field_->DeleteObject((sf::Vector2u)pos); }
@@ -70,34 +74,11 @@ class Game {
                 game.field_->ResetCurrent();
 
                 std::cout << "unchoose!" << std::endl;
-
-                game.handler_->DeleteBindings(UNIT_NUM);
                 return;
             }
 
             game.field_->SetCurrent(pos);
             std::cout << "choose!" << std::endl;
-
-            switch (game.state) {
-                case PREPARE:
-                    game.handler_->AddBinding(EventType::UNIT_NUM,
-                                              new CreateUnit(game, true));
-                    break;
-
-                case WAIT:
-                    game.handler_->AddBinding(EventType::UNIT_NUM,
-                                              new CreateUnit(game, false));
-                    break;
-
-                case STEP:
-
-                    if (game.field_->GetObject(game.field_->GetCurrent()) !=
-                        nullptr)
-                        game.handler_->ChangeBinding(
-                            EventType::CELL,
-                            new MoveCommand(game, game.field_->GetCurrent()));
-                    break;
-            }
         }
     };
 
@@ -154,8 +135,7 @@ class Game {
         ReturnCommand(Game &_game) : game(_game) {}
         void Execute(GameEvent event) {
             std::cout << "return" << std::endl;
-            game.handler_ = game.w_handler.get();
-            game.state = STEP;
+            game.setState(STEP);
         }
     };
 
@@ -168,8 +148,6 @@ class Game {
 
         void Execute(GameEvent event) override {
             std::cout << "send" << std::endl;
-            game.state = WAIT;
-            game.handler_->DeleteBindings(UNIT_NUM);
 
             std::string commands = "";
 
@@ -181,9 +159,8 @@ class Game {
             commands += "e";
 
             game.n_handler->send(commands);
-            game.handler_ = game.n_handler.get();
-            game.handler_->AddBinding(CELL, new ChooseCommand(game));
-            game.handler_->AddBinding(END, new ReturnCommand(game));
+
+            game.setState(GameState::WAIT_FOR_POS);
 
             game.last.clear();
         }
