@@ -21,6 +21,7 @@ private:
     ip::tcp::socket socket_;
     std::string read_buffer_;
     std::string write_buffer_;
+    std::string last_accepted_str_;
 
 public:
     Connection(io_service service)
@@ -31,5 +32,6 @@ public:
     void close();
     void handle_read(error_code& error, size_t bytes_transferred);
     void handle_write(error_code& error, size_t bytes_transferred);
+    std::string get_last_accepted_str();
 };
 

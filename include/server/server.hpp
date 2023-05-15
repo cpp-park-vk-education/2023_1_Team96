@@ -45,33 +45,17 @@ class Match
 {
 
 private:
-    boost::shared_ptr<Connection> player1;
-    boost::shared_ptr<Connection> player2;
-//    boost::shared_ptr<GameServer> game_server;
-};
-
-class Matchmaking
-{
+    boost::shared_ptr<Connection> player1_;
+    boost::shared_ptr<Connection> player2_;
 
 public:
+    Match(boost::shared_ptr<Connection> player1, boost::shared_ptr<Connection> player2)
+    :   player1_(player1), player2_(player2)
+    {};
 
-    Matchmaking(io_service& service, const std::string& address, const std::string& port);
-
-    void start();
-    void stop();
-
-private:
-
-    void handle_player_connection(boost::shared_ptr<Connection> connection, const error_code& error);
-    void handle_match_creation();
-
-    io_service& service_;
-    Server& server_;
- //   GameServer game_server_;
-
-    std::vector<boost::shared_ptr<Connection>> players_ ; // список подключенных игроков
-    std::vector<boost::shared_ptr<Match>> matches_; // список созданных матчей
-    
+    void sendToPlayer1(const std::string& message);
+    void sendToPlayer2(const std::string& message);
+    std::string recieveFromPlayer1();
+    std::string recieveFromPlayer2();
+    void end();
 };
-
-void print_hello(); 

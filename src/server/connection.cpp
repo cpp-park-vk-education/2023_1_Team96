@@ -29,7 +29,7 @@ void Connection::handle_read(error_code& error, size_t bytes_transferred)
     if (!error)
     {
         std::string recived_data(read_buffer_, bytes_transferred);
-        
+        last_accepted_str_ = recived_data;
         //Обработка данных
         
         start();
@@ -40,6 +40,7 @@ void Connection::handle_read(error_code& error, size_t bytes_transferred)
         close();
     }
 }
+
 
 
 void Connection::write(const std::string& message)
@@ -64,3 +65,7 @@ void Connection::handle_write(error_code& error, size_t bytes_transferred)
     }
 }
 
+std::string Connection::get_last_accepted_str()
+{
+    return last_accepted_str_;
+}
