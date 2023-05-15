@@ -1,8 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 
 #include "graphics/sfml_monitor.hpp"
+#include "input/network_input.hpp"
 #include "input/sfml_input.hpp"
 #include "model/field.hpp"
 
@@ -22,27 +24,37 @@ class Game {
    private:
     unique_ptr<Field> field_;
     unique_ptr<SFMLWindow> monitor_;
-    unique_ptr<SFMLWindowHandler> handler_;
+    unique_ptr<SFMLWindowHandler> w_handler;
+    unique_ptr<NetworkHandler> n_handler;
+    InputHandler *handler_;
     vector<ICommand *> last;
     GameState state;
 
     class CreateUnit : public ICommand {
        private:
         Game &game;
-        sf::Vector2i last;
+        sf::Vector2i pos;
+        bool isMine;
 
        public:
-        CreateUnit(Game &_game) : game(_game) {}
+        CreateUnit(Game &_game, bool _isMine = true)
+            : game(_game), isMine(_isMine) {}
 
         void Execute(GameEvent event) override {
             game.field_->createUnit(
-                event.unit_type,
+                event.unit_type, isMine,
                 std::move(game.monitor_->getModel(ModelType::B_MODEL)));
-            last = game.field_->getCurrent();
+            pos = game.field_->getCurrent();
             game.last.push_back(this);
         }
 
-        void Undo() override { game.field_->deleteUnit((sf::Vector2u)last); }
+        void Undo() override { game.field_->deleteUnit((sf::Vector2u)pos); }
+
+        std::string string() {
+            std::ostringstream ostrm;
+            ostrm << "c b " << (14 - pos.x) << " " << pos.y;
+            return ostrm.str();
+        }
     };
 
     class ChooseCommand : public ICommand {
@@ -69,7 +81,12 @@ class Game {
             switch (game.state) {
                 case PREPARE:
                     game.handler_->AddBinding(EventType::UNIT_NUM,
-                                              new CreateUnit(game));
+                                              new CreateUnit(game, true));
+                    break;
+
+                case WAIT:
+                    game.handler_->AddBinding(EventType::UNIT_NUM,
+                                              new CreateUnit(game, false));
                     break;
 
                 case STEP:
@@ -82,8 +99,6 @@ class Game {
                     break;
             }
         }
-
-        void Undo() override {}
     };
 
     class CancelCommand : public ICommand {
@@ -100,8 +115,6 @@ class Game {
                 game.last.pop_back();
             }
         }
-
-        void Undo() override {}
     };
 
     class MoveCommand : public ICommand {
@@ -115,15 +128,15 @@ class Game {
 
         void Execute(GameEvent event) override {
             to = event.cords;
-            if (!game.field_->change(from, to)) return;
+            if (game.field_->change(from, to)) {
+                GameObject &obj = *game.field_->getObject(to);
 
-            GameObject &obj = *game.field_->getObject(to);
+                obj.DoAction(ActionType::MOVE, (Vector2u)to);
 
-            obj.DoAction(ActionType::MOVE, (Vector2u)to);
+                game.last.push_back(this);
 
-            game.last.push_back(this);
-
-            game.field_->resetCurrent();
+                game.field_->resetCurrent();
+            }
 
             game.handler_->ChangeBinding(CELL, new ChooseCommand(game));
         }
@@ -137,6 +150,19 @@ class Game {
         }
     };
 
+    class ReturnCommand : public ICommand {
+       private:
+        Game &game;
+
+       public:
+        ReturnCommand(Game &_game) : game(_game) {}
+        void Execute(GameEvent event) {
+            std::cout << "return" << std::endl;
+            game.handler_ = game.w_handler.get();
+            game.state = STEP;
+        }
+    };
+
     class SendCommand : public ICommand {
        private:
         Game &game;
@@ -144,14 +170,27 @@ class Game {
        public:
         SendCommand(Game &_game) : game(_game) {}
 
-        void Execute(GameEvent event) override { 
-            std::cout << "send" << std::endl; 
-            game.state = STEP; 
+        void Execute(GameEvent event) override {
+            std::cout << "send" << std::endl;
+            game.state = WAIT;
             game.handler_->DeleteBindings(UNIT_NUM);
+
+            std::string commands = "";
+
+            for (ICommand *cmd : game.last) {
+                commands += cmd->string();
+                commands += " ";
+            }
+
+            commands += "e";
+
+            game.n_handler->send(commands);
+            game.handler_ = game.n_handler.get();
+            game.handler_->AddBinding(CELL, new ChooseCommand(game));
+            game.handler_->AddBinding(END, new ReturnCommand(game));
+
             game.last.clear();
         }
-
-        void Undo() override {}
     };
 
     void handleInput() { handler_->Handle(); }
@@ -161,7 +200,9 @@ class Game {
     void render();
 
    public:
-    Game(unique_ptr<SFMLWindow> monitor, unique_ptr<SFMLWindowHandler> handler);
+    Game(unique_ptr<SFMLWindow> monitor,
+         unique_ptr<SFMLWindowHandler> _w_handler,
+         unique_ptr<NetworkHandler> _n_handler);
 
     void StartGame();
 };

@@ -10,6 +10,7 @@ enum EventType
     CANCEL,
     UNIT_NUM,
     SEND,
+    END,
 };
 
 struct GameEvent
@@ -27,7 +28,8 @@ class ICommand
 {
 public:
     virtual void Execute(GameEvent event) = 0;
-    virtual void Undo() = 0;
+    virtual void Undo() {};
+    virtual std::string string() { return "";};
 
     ~ICommand() {}
 };
