@@ -1,24 +1,21 @@
 #include "model/field.hpp"
 
-bool Field::createUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> model) {
+bool Field::CreateUnit(UnitType type, bool isMine,
+                       unique_ptr<IObjectModel> model) {
+    if (!IsValidPosition(current)) return false;
+    if (isMine && current.x >= w / 2) return false;
 
-    Vector2i pos = {current.x, current.y};
-
-    if (!isValid(pos)) return false;
-
-    uint i = index(pos);
-
-    if (isMine && pos.x >= 7) return false;
-
+    uint i = index(current);
     if (objects[i] != nullptr) return false;
 
     switch (type) {
         case B:
-            objects[i] = std::make_shared<GameObject>(
-                nullptr, isMine, std::move(model), Vector2u{pos.x, pos.y});
-            objects[i]->AddAction(
-                ActionType::MOVE,
-                std::move(std::make_unique<MoveAction>(*(objects[i]), 1)));
+            objects[i] =
+                std::make_shared<GameObject>(nullptr, isMine, std::move(model),
+                                             Vector2u{current.x, current.y});
+
+            UnitFactory uf(1, 1, 5, 1, 2);
+            uf.AddObjectActions(objects[i]);
 
             std::cout << "created!" << std::endl;
 
@@ -27,32 +24,33 @@ bool Field::createUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> mode
     return false;
 };
 
-void Field::deleteUnit(Vector2u pos) { objects[pos.y * w + pos.x] = nullptr; };
+void Field::DeleteObject(Vector2u pos) {
+    objects[pos.y * w + pos.x] = nullptr;
+};
 
-void Field::setCurrent(Vector2i pos) {
+void Field::SetCurrent(Vector2i pos) {
     current.x = pos.x;
     current.y = pos.y;
     model->setCurrent(current);
     std::cout << pos.x << std::endl;
 };
 
-void Field::resetCurrent() {
+void Field::ResetCurrent() {
     sf::Vector2i res = current;
     current.x = -1;
     current.y = -1;
     model->resetCurrent();
 };
 
-void Field::draw() {
+void Field::Draw() {
     model->draw();
     for (std::shared_ptr<GameObject> object : objects) {
         if (object) object->getModel().draw();
     }
 };
 
-bool Field::change(Vector2i a, Vector2i b)
-{
-    if (!isValid(a) || !isValid(b)) return false;
+bool Field::MoveObject(Vector2i a, Vector2i b) {
+    if (!IsValidPosition(a) || !IsValidPosition(b)) return false;
 
     uint ai = index(a);
     uint bi = index(b);
@@ -63,6 +61,6 @@ bool Field::change(Vector2i a, Vector2i b)
 
     if (objects[bi] != nullptr) return false;
 
-    std::swap(objects[ai], objects[bi]); 
+    std::swap(objects[ai], objects[bi]);
     return true;
 };

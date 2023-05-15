@@ -43,16 +43,16 @@ class Game {
             : game(_game), isMine(_isMine) {}
 
         void Execute(GameEvent event) override {
-            game.field_->createUnit(
+            game.field_->CreateUnit(
                 event.unit_type, isMine,
                 std::move(game.monitor_->getModel(ModelType::B_MODEL)));
-            pos = game.field_->getCurrent();
+            pos = game.field_->GetCurrent();
             game.last.push_back(this);
 
             game.handler_->ChangeBinding(UNIT_NUM, new CreateUnit(game, isMine));
         }
 
-        void Undo() override { game.field_->deleteUnit((sf::Vector2u)pos); }
+        void Undo() override { game.field_->DeleteObject((sf::Vector2u)pos); }
 
         std::string string() {
             std::ostringstream ostrm;
@@ -70,14 +70,14 @@ class Game {
 
         void Execute(GameEvent event) override {
             sf::Vector2i pos = sf::Vector2i{event.cords.x, event.cords.y};
-            if (pos == game.field_->getCurrent()) {
-                game.field_->resetCurrent();
+            if (pos == game.field_->GetCurrent()) {
+                game.field_->ResetCurrent();
 
                 std::cout << "unchoose!" << std::endl;
                 return;
             }
 
-            game.field_->setCurrent(pos);
+            game.field_->SetCurrent(pos);
             std::cout << "choose!" << std::endl;
         }
     };
@@ -109,24 +109,20 @@ class Game {
 
         void Execute(GameEvent event) override {
             to = event.cords;
-            if (game.field_->change(from, to)) {
-                GameObject &obj = *game.field_->getObject(to);
-
+            GameObject &obj = *game.field_->GetObject(to);
+            if (obj.CanDoAction(ActionType::MOVE, (Vector2u)to) &&
+                game.field_->MoveObject(from, to)) {
                 obj.DoAction(ActionType::MOVE, (Vector2u)to);
-
                 game.last.push_back(this);
-
-                game.field_->resetCurrent();
+                game.field_->ResetCurrent();
             }
 
             game.handler_->ChangeBinding(CELL, new ChooseCommand(game));
         }
 
         void Undo() override {
-            if (!game.field_->change(to, from)) return;
-
-            GameObject &obj = *game.field_->getObject(from);
-
+            if (!game.field_->MoveObject(to, from)) return;
+            GameObject &obj = *game.field_->GetObject(from);
             obj.DoAction(ActionType::MOVE, (Vector2u)from);
         }
     };
