@@ -6,13 +6,14 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
-#include "connection.hpp"
+#include <iostream>
+#include <boost/thread.hpp>
 
 using namespace boost::asio;
 using namespace boost::system;
 
 
-class Connection: public boost::enable_shared_from_this<Connection>, boost::noncopyable 
+class Connection: public boost::enable_shared_from_this<Connection>
 {
     
 private:
@@ -22,12 +23,13 @@ private:
     std::string write_buffer_;
 
 public:
-    Connection(io_service service);
+    Connection(io_service service)
+    : socket_(service)
+    {};
     void start();
-    void write(std::string message);
+    void write(const std::string& message);
     void close();
     void handle_read(error_code& error, size_t bytes_transferred);
     void handle_write(error_code& error, size_t bytes_transferred);
-    ip::tcp::socket get_socket();
 };
 
