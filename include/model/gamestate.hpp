@@ -8,6 +8,7 @@
 #include "field.hpp"
 #include "graphics/sfml_monitor.hpp"
 #include "input/sfml_input.hpp"
+#include "server/client.hpp"
 
 using namespace std::placeholders;
 using std::unique_ptr;
@@ -18,18 +19,12 @@ using std::string;
 
 #define BIND(function) std::bind(&Game::function, this, std::placeholders::_1)
 
-struct ICommand {
-    virtual void Execute(GameEvent event) = 0;
-    virtual void Undo() {};
-    virtual std::string string() { return "";};
-
-    ~ICommand() {}
-};
-
 enum State { PREPARE, PREPARE_CELL_CHOSEN, WAIT, STEP, UNIT_CHOSEN, STEP_CELL_CHOSEN, ERROR };
 
 class Game {
    private:
+    unique_ptr<Client> client_;
+
     unique_ptr<SFMLWindow> monitor_;
     unique_ptr<InputHandler> handler_;
     unique_ptr<Field> field_;
@@ -48,8 +43,6 @@ class Game {
     string CreateObjectCmd(UnitType type, sf::Vector2i pos);
     string MoveObjectCmd(sf::Vector2i from, sf::Vector2i to);
     string AttackObjectCmd(sf::Vector2i from, sf::Vector2i to);
-
-    stack<State> state_stack_;
 
     State OnError(GameEvent ev) { return State::ERROR; }
 
