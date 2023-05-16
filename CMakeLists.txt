@@ -28,6 +28,7 @@ file(GLOB SERVER "src/server/*.cpp")
 set(Tactics_SRC main.cpp ${QT_SRC_DIR}/chooseopponentform.cpp ${QT_SRC_DIR}/entranceform.cpp ${QT_SRC_DIR}/gameform.cpp ${QT_SRC_DIR}/mainwindow.cpp ${GRAPHICS} ${MODEL} ${INPUT} ${SERVER} )
 
 add_executable(tactics ${Tactics_SRC} ${Tactics_H})
+add_executable(server server.cpp ${SERVER})
 # add_executable(tactics ${Tactics_SRC})LIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
 
