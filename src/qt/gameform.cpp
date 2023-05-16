@@ -31,8 +31,7 @@ GameForm::GameForm(QWidget *parent) :
     ui->widget->resize(600,600);
     ui->widget->show();
 
-    MyCanvas* SFMLWindow = new MyCanvas(ui->widget, QPoint(20, 20), QSize(1000, 360));
-    SFMLWindow->show();
+    
     //this->setVisible(false);
 
     //SFMLWindow->show();
@@ -81,6 +80,9 @@ void GameForm::onStartTimerClick() {
 //   std::unique_ptr<SFMLWindowHandler> handler = std::make_unique<SFMLWindowHandler>(monitor->getWindow());
 //   Game game(std::move(monitor), std::move(handler));
 //   game.StartGame();
+
+    MyCanvas* SFMLWindow = new MyCanvas(ui->widget, QPoint(20, 20), QSize(1000, 360));
+    SFMLWindow->show();
     
 }
 
