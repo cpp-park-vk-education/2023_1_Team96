@@ -1,23 +1,16 @@
 #include "model/field.hpp"
 
 bool Field::CreateUnit(UnitType type, bool isMine,
-                       unique_ptr<IObjectModel> model) {
-    if (!IsValidPosition(current)) return false;
-    if (isMine && current.x >= w / 2) return false;
-
-    uint i = index(current);
-    if (objects[i] != nullptr) return false;
+                       unique_ptr<IObjectModel> model, sf::Vector2i pos) {
+    uint i = index(pos);
 
     switch (type) {
         case B:
-            objects[i] =
-                std::make_shared<GameObject>(nullptr, isMine, std::move(model),
-                                             Vector2u{current.x, current.y});
+            objects[i] = std::make_shared<GameObject>(
+                nullptr, isMine, std::move(model), Vector2u{pos.x, pos.y});
 
             UnitFactory uf(1, 1, 5, 1, 2);
             uf.AddObjectActions(objects[i]);
-
-            std::cout << "created!" << std::endl;
 
             return true;
     }
@@ -26,20 +19,6 @@ bool Field::CreateUnit(UnitType type, bool isMine,
 
 void Field::DeleteObject(Vector2u pos) {
     objects[pos.y * w + pos.x] = nullptr;
-};
-
-void Field::SetCurrent(Vector2i pos) {
-    current.x = pos.x;
-    current.y = pos.y;
-    model->setCurrent(current);
-    std::cout << pos.x << std::endl;
-};
-
-void Field::ResetCurrent() {
-    sf::Vector2i res = current;
-    current.x = -1;
-    current.y = -1;
-    model->resetCurrent();
 };
 
 void Field::Draw() {

@@ -4,14 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "utility/common.h"
 
-enum EventType
-{
-    CELL,
-    CANCEL,
-    UNIT_NUM,
-    SEND,
-    END,
-};
+enum EventType { CHOSE, UNCHOSE, CREATE_OBJECT, MOVE_CMD, ATTACK_CMD, FINISH };
 
 struct GameEvent
 {
@@ -24,43 +17,6 @@ struct GameEvent
     };
 };
 
-class ICommand
-{
-public:
-    virtual void Execute(GameEvent event) = 0;
-    virtual void Undo() {};
-    virtual std::string string() { return "";};
-
-    ~ICommand() {}
-};
-
-class InputHandler
-{
-public:
-    void AddBinding(EventType type, ICommand* cmd)
-    {
-        bindings[type] = cmd;
-    };
-
-    void ChangeBinding(EventType type, ICommand* cmd)
-    {
-        bindings[type] = cmd;
-    };
-
-    virtual void Handle() = 0;
-
-    void DeleteBinding(EventType type) 
-    {
-        bindings[type] = nullptr;
-    }
-
-    void Execute(GameEvent event) 
-    {
-        bindings[event.type]->Execute(event);
-    }
-
-    virtual ~InputHandler() {}
-
-protected:
-    std::unordered_map<EventType, ICommand*> bindings;
+struct InputHandler {
+    virtual GameEvent Handle() = 0;
 };
