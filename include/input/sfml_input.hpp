@@ -11,7 +11,7 @@ class SFMLWindowHandler : public InputHandler {
    public:
     SFMLWindowHandler(sf::Window &window) : window(window) {}
 
-    void Handle();
+    GameEvent Handle();
 
     ~SFMLWindowHandler() {}
 };
