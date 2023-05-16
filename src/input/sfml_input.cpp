@@ -31,6 +31,11 @@ GameEvent SFMLWindowHandler::Handle() {
                     GameEvent ge{EventType::FINISH};
                     return ge;
                 }
+                if (event.key.code == sf::Keyboard::Space) {
+                    GameEvent ge{EventType::FINISH};
+                    ge.cmds = "c b 2 3 c b 2 4 c b 2 5 e";
+                    return ge;
+                }
                 break;
         }
     }

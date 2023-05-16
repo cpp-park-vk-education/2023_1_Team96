@@ -14,6 +14,7 @@ struct GameEvent
     {
         sf::Vector2i cords;
         UnitType unit_type;
+        char* cmds;
     };
 };
 

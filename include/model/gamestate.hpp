@@ -14,6 +14,7 @@ using std::unique_ptr;
 using std::vector;
 using std::stack;
 using std::shared_ptr;
+using std::string;
 
 #define BIND(function) std::bind(&Game::function, this, std::placeholders::_1)
 
@@ -36,7 +37,17 @@ class Game {
     State state_;
     sf::Vector2i cell_;
     shared_ptr<GameObject> obj_;
-    bool Turn;
+    bool turn_;
+
+    string commands_;
+
+    void HandleCommands(string commands);
+    void RevertXCord(int& x_cord) { x_cord = 14 - x_cord; };
+    UnitType MapUnitType(char type);
+
+    string CreateObjectCmd(UnitType type, sf::Vector2i pos);
+    string MoveObjectCmd(sf::Vector2i from, sf::Vector2i to);
+    string AttackObjectCmd(sf::Vector2i from, sf::Vector2i to);
 
     stack<State> state_stack_;
 
