@@ -45,6 +45,7 @@ void MainWindow::setupFirstWidget(){
 
 void MainWindow::setupThirdWidget(){
     stackedWidget->setCurrentIndex(2);
+    //this->setVisible(false);
 }
 
 
