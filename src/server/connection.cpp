@@ -6,7 +6,6 @@ using namespace boost::placeholders;
 using namespace boost::system;
 
 
-
 void Connection::close()
 {
     error_code ec;
@@ -68,4 +67,9 @@ void Connection::handle_write(error_code& error, size_t bytes_transferred)
 std::string Connection::get_last_accepted_str()
 {
     return last_accepted_str_;
+}
+
+ip::tcp::socket& Connection::get_socket()
+{
+    return socket_;
 }

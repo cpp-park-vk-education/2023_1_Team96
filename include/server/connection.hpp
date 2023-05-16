@@ -24,8 +24,8 @@ private:
     std::string last_accepted_str_;
 
 public:
-    Connection(io_service service)
-    : socket_(service)
+    Connection(io_context& context)
+    : socket_(context)
     {};
     void start();
     void write(const std::string& message);
@@ -33,5 +33,7 @@ public:
     void handle_read(error_code& error, size_t bytes_transferred);
     void handle_write(error_code& error, size_t bytes_transferred);
     std::string get_last_accepted_str();
+    ip::tcp::socket& get_socket();
 };
+
 
