@@ -17,15 +17,24 @@ class Client
 private:
 
     ip::tcp::endpoint ep_;
-    io_service service_;
-    Connection connection_;
+    io_context context_;
+    boost::shared_ptr<Connection> connection_;
+    std::string last_comand;
     
 public:
 
-    Client(const std::string& address, const std::string& port);
+    Client(const std::string& address, const std::string& port)
+    :   ep_(ip::tcp::endpoint(ip::address::from_string(address), std::stoi(port))),
+        context_()
+    {};
+
     void connect();
+    void handle_connect(const error_code& error);
     void start();
     void write(const std::string& message);
     void close();
+    void read();
+    void handle_read(const std::string& data, const error_code& error);
 
 };
+
