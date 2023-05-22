@@ -28,7 +28,7 @@ GameForm::GameForm(QWidget *parent) :
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(onStartTimerClick()));
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
 
-    ui->widget->resize(600,600);
+    ui->widget->resize(1000,600);
     ui->widget->show();
 
     
@@ -56,6 +56,29 @@ void GameForm::resizeEvent(QResizeEvent *evt)
     QPalette p = palette(); 
     p.setBrush(QPalette::Background, bkgnd);
     setPalette(p);
+
+    QRect parentgeometry = this->geometry();
+    ui->startButton->setGeometry({parentgeometry.width() - ui->startButton->geometry().width() - 25,
+                                   25,
+                                   ui->startButton->geometry().width(),
+                                   ui->startButton->geometry().height()});
+    
+    ui->switchButton->setGeometry({parentgeometry.width() - ui->switchButton->geometry().width() - 25,
+                                   75,
+                                   ui->switchButton->geometry().width(),
+                                   ui->switchButton->geometry().height()});
+
+    ui->lcd->setGeometry({parentgeometry.width() - ui->lcd->geometry().width() - 25,
+                                   125,
+                                   ui->lcd->geometry().width(),
+                                   ui->lcd->geometry().height()});
+
+    ui->finishButton->setGeometry({parentgeometry.width() - ui->finishButton->geometry().width() - 25,
+                                   175,
+                                   ui->finishButton->geometry().width(),
+                                   ui->finishButton->geometry().height()});
+
+    
 
     QWidget::resizeEvent(evt); 
 }
@@ -126,14 +149,14 @@ void QSFMLCanvas::showEvent(QShowEvent*)
             XFlush(QX11Info::display());
         #endif
 
-        std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000,600},parentwidget->winId());
+        std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000,600},parentwidget->winId(), 9999292);
                 // qDebug() << "winId " << (sf::WindowHandle)winId();
                 // qDebug() << parentwidget->winId();
         std::unique_ptr<SFMLWindowHandler> handler = std::make_unique<SFMLWindowHandler>(monitor->getWindow());
         Game game(std::move(monitor), std::move(handler));
         game.StartGame();
         // Create the SFML window with the widget handle
-        sf::RenderWindow::create((sf::WindowHandle)winId());
+        //sf::RenderWindow::create((sf::WindowHandle)winId());
 
         // Let the derived class do its specific stuff
         OnInit();

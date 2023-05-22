@@ -89,7 +89,7 @@ std::unique_ptr<SFMLFieldModel> SFMLWindow::getFieldModel(uint cols,
     return std::make_unique<SFMLFieldModel>(m_window, cols, rows);
 };
 
-SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size, sf::WindowHandle winhandle) {
+SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size, sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle) {
     m_windowTitle = l_title;
     m_windowSize = l_size;
     m_window.create(winhandle);                               //sf::VideoMode(m_windowSize.x, m_windowSize.y),m_windowTitle

@@ -61,7 +61,7 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
 
 class SFMLWindow {
    public:
-    SFMLWindow(const string &l_title, const sf::Vector2u &l_size, sf::WindowHandle winhandle);
+    SFMLWindow(const string &l_title, const sf::Vector2u &l_size, sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle);
     
     ~SFMLWindow() { Destroy(); }
 
