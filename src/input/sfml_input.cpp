@@ -1,7 +1,7 @@
 #include "input/sfml_input.hpp"
 #include <iostream>
 
-void SFMLWindowHandler::Handle() {
+GameEvent SFMLWindowHandler::Handle() {
     sf::Event event;
     while (window.pollEvent(event)) {
         std::cout << "in poll eevnt" << std::endl;
@@ -12,26 +12,31 @@ void SFMLWindowHandler::Handle() {
 
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    GameEvent ge{CELL};
+                    GameEvent ge{EventType::CHOSE};
                     ge.cords = sf::Vector2i{event.mouseButton.x / 63,
                                             event.mouseButton.y / 63};
-                    bindings[CELL]->Execute(ge);
+                    return ge;
                 }
                 break;
 
             case sf::Event::KeyPressed:
                 if (event.key.code == sf::Keyboard::BackSpace) {
-                    GameEvent ge{CANCEL};
-                    bindings[CANCEL]->Execute(ge);
+                    GameEvent ge{EventType::UNCHOSE};
+                    return ge;
                 }
                 if (event.key.code == sf::Keyboard::Num1) {
-                    GameEvent ge{UNIT_NUM};
+                    GameEvent ge{EventType::CREATE_OBJECT};
                     ge.unit_type = B;
-                    if (bindings[UNIT_NUM]) bindings[UNIT_NUM]->Execute(ge);
+                    return ge;
                 }
                 if (event.key.code == sf::Keyboard::Enter) {
-                    GameEvent ge{SEND};
-                    if (bindings[SEND]) bindings[SEND]->Execute(ge);
+                    GameEvent ge{EventType::FINISH};
+                    return ge;
+                }
+                if (event.key.code == sf::Keyboard::Space) {
+                    GameEvent ge{EventType::FINISH};
+                    ge.cmds = "c b 2 3 c b 2 4 c b 2 5 e";
+                    return ge;
                 }
                 break;
         }

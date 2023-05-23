@@ -24,9 +24,11 @@ set(QT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/qt)
 file(GLOB MODEL "src/model/*.cpp")
 file(GLOB GRAPHICS "src/graphics/*.cpp")
 file(GLOB INPUT "src/input/*.cpp")
-set(Tactics_SRC main.cpp ${QT_SRC_DIR}/chooseopponentform.cpp ${QT_SRC_DIR}/entranceform.cpp ${QT_SRC_DIR}/gameform.cpp ${QT_SRC_DIR}/mainwindow.cpp ${GRAPHICS} ${MODEL} ${INPUT} )
+file(GLOB SERVER "src/server/*.cpp")
+set(Tactics_SRC main.cpp ${QT_SRC_DIR}/chooseopponentform.cpp ${QT_SRC_DIR}/entranceform.cpp ${QT_SRC_DIR}/gameform.cpp ${QT_SRC_DIR}/mainwindow.cpp ${GRAPHICS} ${MODEL} ${INPUT} ${SERVER} )
 
 add_executable(tactics ${Tactics_SRC} ${Tactics_H})
+add_executable(server server.cpp ${SERVER})
 # add_executable(tactics ${Tactics_SRC})LIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
 
@@ -36,6 +38,7 @@ target_link_libraries(tactics Qt5::Widgets)
 
 # find_package(Boost REQUIRED COMPONENTS system thread date_time regex serialization)
 # target_link_libraries(tactics Boost::system Boost::thread Boost::date_time Boost::regex Boost::serialization)
-target_link_libraries(tactics sfml-window sfml-graphics)
+target_link_libraries(tactics sfml-window sfml-graphics sfml-network)
+target_link_libraries(server sfml-network)
 
 include_directories(include)

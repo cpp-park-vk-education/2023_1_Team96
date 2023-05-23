@@ -29,6 +29,3 @@ void Game::render() {
     monitor_->Prepare();
 
     field_->draw();
-
-    monitor_->Draw();
-}

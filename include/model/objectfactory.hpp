@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "model/gameobject.hpp"
+#include "gameobject.hpp"
 
 struct IObjectActionsFactory {
     virtual void AddObjectActions(std::shared_ptr<GameObject> obj) = 0;

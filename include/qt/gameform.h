@@ -1,7 +1,7 @@
 #ifndef GAMEFORM_H
 #define GAMEFORM_H
 
-#include "model/gamemodel.hpp"
+#include "model/gamestate.hpp"
 #include "graphics/sfml_monitor.hpp"
 #include "input/sfml_input.hpp"
 
