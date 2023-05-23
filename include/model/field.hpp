@@ -35,6 +35,16 @@ class Field {
         return true;
     }
 
+    void choose(const sf::Vector2i& pos)
+    {
+        model->setCurrent(pos);
+    }
+
+    void reset()
+    {
+        model->resetCurrent();
+    }
+
     shared_ptr<GameObject> GetObject(Vector2i pos) {
         return objects[index(pos)];
     };
