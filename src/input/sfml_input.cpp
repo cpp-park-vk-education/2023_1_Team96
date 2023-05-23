@@ -1,5 +1,7 @@
 #include "input/sfml_input.hpp"
 
+#include <iostream>
+
 GameEvent SFMLWindowHandler::Handle() {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -11,7 +13,7 @@ GameEvent SFMLWindowHandler::Handle() {
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     GameEvent ge{EventType::CHOSE};
-                    ge.cords = sf::Vector2i{event.mouseButton.x / 63,
+                    ge.cords = sf::Vector2u{event.mouseButton.x / 63,
                                             event.mouseButton.y / 63};
                     return ge;
                 }

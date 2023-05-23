@@ -16,43 +16,34 @@ using uint = unsigned int;
 
 class Field {
    private:
-    vector<shared_ptr<GameObject>> objects;
-    unsigned int h, w;
-    unique_ptr<SFMLFieldModel> model;
+    vector<shared_ptr<GameObject>> objects_;
+    unsigned int h_, w_;
+    unique_ptr<SFMLFieldModel> model_;
 
-    uint index(Vector2i pos) { return pos.y * w + pos.x; }
+    uint index(Vector2u pos) { return pos.y * w_ + pos.x; }
 
    public:
-    Field(uint _h, uint _w, unique_ptr<SFMLFieldModel>&& f_model)
-        : h(_h), w(_w), objects(_h * _w), model(std::move(f_model)) {}
+    Field(uint h, uint w, unique_ptr<SFMLFieldModel>&& f_model)
+        : h_(h), w_(w), objects_(h * w), model_(std::move(f_model)) {}
 
     bool CreateUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> model,
-                    sf::Vector2i pos);
+                    sf::Vector2u pos);
 
-    bool IsValidPosition(Vector2i pos) {
-        if (pos.x < 0 || pos.x >= w || pos.y < 0 || pos.y >= h) return false;
-        if (pos.x >= w / 2) return false;
-        return true;
+    bool IsValidPosition(Vector2u pos);
+    bool IsMyPart(Vector2u pos) { return pos.x < w_ / 2; }
+    bool IsEmpty(Vector2u pos) { return objects_[index(pos)] == nullptr; }
+
+    void Choose(const sf::Vector2u& pos) { model_->setCurrent(pos); }
+    void Reset() { model_->resetCurrent(); }
+
+    shared_ptr<GameObject> GetObject(Vector2u pos) {
+        return objects_[index(pos)];
     }
 
-    void choose(const sf::Vector2i& pos)
-    {
-        model->setCurrent(pos);
-    }
-
-    void reset()
-    {
-        model->resetCurrent();
-    }
-
-    shared_ptr<GameObject> GetObject(Vector2i pos) {
-        return objects[index(pos)];
-    };
-
-    bool MoveObject(Vector2i from, Vector2i to);
+    bool MoveObject(Vector2u from, Vector2u to);
     void DeleteObject(Vector2u pos);
 
-    bool Empty(Vector2i pos) { return objects[index(pos)] == nullptr; }
-
     void Draw();
+
+    uint Width() const { return w_; }
 };

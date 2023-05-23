@@ -28,14 +28,14 @@ class SFMLFieldModel : public IFieldModel, public SFMLModel {
     sf::Vector2u size;
     sf::Sprite s_map;
     sf::Texture tile_set;
-    sf::Vector2i current;
+    sf::Vector2u current;
 
    public:
     SFMLFieldModel(sf::RenderWindow &_window, uint cols, uint rows);
 
     void draw() override;
 
-    void setCurrent(sf::Vector2i pos) override { current = pos; };
+    void setCurrent(sf::Vector2u pos) override { current = pos; };
 
     void resetCurrent() override {
         current.x = -1;

@@ -21,7 +21,10 @@ GameObject::GameObject()
     : player_(), model_(nullptr), pos_(-1, -1), actions_() {}
 GameObject::GameObject(std::shared_ptr<Player> player, bool _isMine,
                        std::unique_ptr<IObjectModel> model, sf::Vector2u pos)
-    : player_(player), isMine(_isMine) , model_(std::move(model)), pos_(pos), actions_() {
+    : player_(player),
+      is_mine_(_isMine),
+      model_(std::move(model)),
+      pos_(pos),
+      actions_() {
     model_->Move(pos_);
 }
-

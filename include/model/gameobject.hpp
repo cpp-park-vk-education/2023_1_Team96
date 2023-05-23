@@ -17,7 +17,7 @@ class GameObject {
     std::map<ActionType, std::unique_ptr<IAction>> actions_;
     sf::Vector2u pos_;
     std::shared_ptr<Player> player_;
-    bool isMine;
+    bool is_mine_;
     std::unique_ptr<IObjectModel> model_;
 
    public:
@@ -25,9 +25,9 @@ class GameObject {
     GameObject(std::shared_ptr<Player> player, bool isMine,
                std::unique_ptr<IObjectModel> model, sf::Vector2u pos);
 
-    bool is_mine() { return isMine; }
+    bool IsMine() { return is_mine_; }
 
-    IObjectModel &getModel() { return *model_; }
+    IObjectModel &GetModel() { return *model_; }
 
     inline const std::shared_ptr<Player> &GetPlayer() const { return player_; };
 
@@ -120,7 +120,7 @@ class MoveAction : public IAction {
     void DoAction(std::any params) override {
         sf::Vector2u new_pos = std::any_cast<sf::Vector2u>(params);
         owner_.SetPos(new_pos);
-        owner_.getModel().Move(new_pos);
+        owner_.GetModel().Move(new_pos);
     }
 
     bool CanDoAction(std::any params) const override {
