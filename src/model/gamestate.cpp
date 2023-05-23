@@ -247,13 +247,18 @@ State Game::OnUnitChosenChose(GameEvent ev) {
             return State::ERROR;
         }
     } else {
-        unique_ptr<Attack> attack = std::make_unique<Attack>(0, 0, cell_);
+        unique_ptr<Attack> attack =
+            std::make_unique<Attack>(0, 0, cell_, false);
+
         if (obj_->CanDoAction(ActionType::ATTACK, attack.get())) {
             obj_->DoAction(ActionType::ATTACK, attack.get());
         }
+
         shared_ptr<GameObject> attacked_obj = field_->GetObject(chosen_cell);
         if (attacked_obj->CanDoAction(ActionType::GET_ATTACKED, attack.get())) {
-            obj_->DoAction(ActionType::GET_ATTACKED, attack.get());
+            attacked_obj->DoAction(ActionType::GET_ATTACKED, attack.get());
+
+            if (attack->is_dead) field_->DeleteObject(chosen_cell);
 
             commands_ += AttackObjectCmd(cell_, chosen_cell);
             field_->Reset();
