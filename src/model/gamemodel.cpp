@@ -18,7 +18,7 @@ Game::Game(unique_ptr<SFMLWindow> monitor,
 
 void Game::StartGame() {
     while (!monitor_->isEnd()) {
-        std::cout << "startgame" << std::endl;
+        //std::cout << "startgame" << std::endl;
         handleInput();
         update();
         render();

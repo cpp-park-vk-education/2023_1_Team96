@@ -1,8 +1,10 @@
 #include "input/sfml_input.hpp"
+#include <iostream>
 
 void SFMLWindowHandler::Handle() {
     sf::Event event;
     while (window.pollEvent(event)) {
+        std::cout << "in poll eevnt" << std::endl;
         switch (event.type) {
             case sf::Event::Closed:
                 window.close();

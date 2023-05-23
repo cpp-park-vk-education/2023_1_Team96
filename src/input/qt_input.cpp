@@ -4,6 +4,7 @@ void QTWindowHandler::Handle() {
     sf::Event event;
     QEvent qevent;
     while (window.pollEvent(event)) {
+        
         switch (event.type) {
             case sf::Event::Closed:
                 window.close();

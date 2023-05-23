@@ -6,6 +6,7 @@
 #include "model/gamemodel.hpp"
 #include "graphics/sfml_monitor.hpp"
 #include "input/sfml_input.hpp"
+#include <iostream>
 
 #ifdef Q_WS_X11
     #include <Qt/qx11info_x11.h>
@@ -27,6 +28,7 @@ GameForm::GameForm(QWidget *parent) :
     connect(ui->finishButton, SIGNAL(clicked()), this, SLOT(finish()));
     connect(ui->startButton, SIGNAL(clicked()), this, SLOT(onStartTimerClick()));
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
+    //connect(ui->widget, SIGNAL(clicked()), this, SLOT(on_widget_clicked()));
 
     ui->widget->resize(1000,600);
     ui->widget->show();
@@ -117,6 +119,14 @@ void GameForm::stopTimer(){
     ui->lcd->setVisible(false);
 }
 
+// void GameForm::on_widget_clicked(){
+//     std::cout << "widget clicked" << std::endl;
+// }
+
+void QWidget::mousePressEvent(QMouseEvent *event){
+    std::cout << "widget clicked" << std::endl;
+}
+
 QSFMLCanvas::QSFMLCanvas(QWidget* Parent, const QPoint& Position, const QSize& Size, unsigned int FrameTime) :
 QWidget       (Parent),
 myInitialized (false)
@@ -137,6 +147,13 @@ myInitialized (false)
     myTimer.setInterval(FrameTime);
 
     parentwidget = Parent;
+
+    std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000,600},parentwidget->winId(), 9999292);
+                // qDebug() << "winId " << (sf::WindowHandle)winId();
+                // qDebug() << parentwidget->winId();
+    std::unique_ptr<SFMLWindowHandler> handler = std::make_unique<SFMLWindowHandler>(monitor->getWindow());
+    Game game(std::move(monitor), std::move(handler));
+    game.StartGame();
 }
 
 void QSFMLCanvas::showEvent(QShowEvent*)
@@ -149,12 +166,12 @@ void QSFMLCanvas::showEvent(QShowEvent*)
             XFlush(QX11Info::display());
         #endif
 
-        std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000,600},parentwidget->winId(), 9999292);
-                // qDebug() << "winId " << (sf::WindowHandle)winId();
-                // qDebug() << parentwidget->winId();
-        std::unique_ptr<SFMLWindowHandler> handler = std::make_unique<SFMLWindowHandler>(monitor->getWindow());
-        Game game(std::move(monitor), std::move(handler));
-        game.StartGame();
+        // std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000,600},parentwidget->winId(), 9999292);
+        //         // qDebug() << "winId " << (sf::WindowHandle)winId();
+        //         // qDebug() << parentwidget->winId();
+        // std::unique_ptr<SFMLWindowHandler> handler = std::make_unique<SFMLWindowHandler>(monitor->getWindow());
+        // Game game(std::move(monitor), std::move(handler));
+        // game.StartGame();
         // Create the SFML window with the widget handle
         //sf::RenderWindow::create((sf::WindowHandle)winId());
 

@@ -32,6 +32,7 @@ private slots:
     void onStartTimerClick();
     void onTimerTimeout();
     void stopTimer();
+    //void on_widget_clicked();
 
 public slots:
     void finish();
