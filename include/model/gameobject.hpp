@@ -58,6 +58,9 @@ struct Attack {
     int damage;
     int range;
     sf::Vector2u attack_pos;
+
+    Attack(int dmg, int r, sf::Vector2u pos)
+        : damage(dmg), range(r), attack_pos(pos) {}
 };
 
 class AttackAction : public IAction {

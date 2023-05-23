@@ -178,6 +178,7 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
                        cell_);
 
     commands_ += CreateObjectCmd(ev.unit_type, cell_);
+    field_->Reset();
 
     cout << "Created!" << endl;
     return State::PREPARE;
@@ -246,10 +247,24 @@ State Game::OnUnitChosenChose(GameEvent ev) {
             return State::ERROR;
         }
     } else {
-        cout << "Здесь должна быть атака, но ее не будет" << endl;
-        commands_ += AttackObjectCmd(cell_, chosen_cell);
-        field_->Reset();
-        return State::STEP;
+        unique_ptr<Attack> attack = std::make_unique<Attack>(0, 0, cell_);
+        if (obj_->CanDoAction(ActionType::ATTACK, attack.get())) {
+            obj_->DoAction(ActionType::ATTACK, attack.get());
+        }
+        shared_ptr<GameObject> attacked_obj = field_->GetObject(chosen_cell);
+        if (attacked_obj->CanDoAction(ActionType::GET_ATTACKED, attack.get())) {
+            obj_->DoAction(ActionType::GET_ATTACKED, attack.get());
+
+            commands_ += AttackObjectCmd(cell_, chosen_cell);
+            field_->Reset();
+
+            cout << "Attacked!" << endl;
+
+            return State::STEP;
+        } else {
+            cout << "Cannot attack this unit" << endl;
+            return State::ERROR;
+        }
     }
 }
 
