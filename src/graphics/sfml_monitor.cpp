@@ -57,13 +57,16 @@ void SFMLFieldModel::draw() {
     }
 };
 
-SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &_window) : SFMLModel(_window) {
+SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &_window, bool isMine) : SFMLModel(_window) {
     sf::Image map_image;
     bool flag = map_image.loadFromFile("../images/unit.png");
     tile_set.loadFromImage(map_image);
     sprite.setTexture(tile_set);
 
+    if (isMine)
     sprite.setTextureRect(sf::IntRect(296, 220, 63, 63));
+    else
+    sprite.setTextureRect(sf::IntRect(296+63, 220, -63, 63));
     // sprite.setScale(10);
 }
 
@@ -73,11 +76,11 @@ void SFMLUnitModel::Move(sf::Vector2u pos) {
     sprite.setPosition(pos.x * 63, pos.y * 63);
 }
 
-std::unique_ptr<IObjectModel> SFMLWindow::getModel(ModelType type) {
+std::unique_ptr<IObjectModel> SFMLWindow::getModel(ModelType type, bool isMine) {
     switch (type) {
         case B_MODEL:
 
-            return std::make_unique<SFMLUnitModel>(m_window);
+            return std::make_unique<SFMLUnitModel>(m_window, isMine);
 
             break;
     }

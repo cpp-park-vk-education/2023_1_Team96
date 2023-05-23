@@ -49,7 +49,7 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
     sf::Texture tile_set;
 
    public:
-    SFMLUnitModel(sf::RenderWindow &_window);
+    SFMLUnitModel(sf::RenderWindow &_window, bool isMine);
 
     void draw() override;
 
@@ -75,7 +75,7 @@ class SFMLWindow {
 
     bool isEnd() { return !m_window.isOpen(); }
 
-    std::unique_ptr<IObjectModel> getModel(ModelType type);
+    std::unique_ptr<IObjectModel> getModel(ModelType type, bool isMine);
 
     std::unique_ptr<SFMLFieldModel> getFieldModel(uint cols, uint rows);
 

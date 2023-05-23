@@ -60,7 +60,7 @@ void Game::HandleCommands(string commands) {
 
                 field_->CreateUnit(
                     unit_type, turn_,
-                    std::move(monitor_->getModel(ModelType::B_MODEL)), pos);
+                    std::move(monitor_->getModel(ModelType::B_MODEL, false)), pos);
             } break;
 
             case 'a': {
@@ -142,6 +142,7 @@ string Game::AttackObjectCmd(sf::Vector2i from, sf::Vector2i to) {
 State Game::OnPrepareChose(GameEvent ev) {
     cell_ = ev.cords;
     cout << "Chosen!" << endl;
+    field_->choose(ev.cords);
     return State::PREPARE_CELL_CHOSEN;
 }
 
@@ -158,6 +159,7 @@ State Game::OnPrepareFinish(GameEvent ev) {
 State Game::OnPrepareCellChosenChose(GameEvent ev) {
     cell_ = ev.cords;
     cout << "Chosen!" << endl;
+    field_->choose(ev.cords);
     return State::PREPARE_CELL_CHOSEN;
 }
 
@@ -172,7 +174,7 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
     if (!field_->Empty(cell_)) return State::ERROR;
 
     field_->CreateUnit(ev.unit_type, turn_,
-                       std::move(monitor_->getModel(ModelType::B_MODEL)),
+                       std::move(monitor_->getModel(ModelType::B_MODEL, true)),
                        cell_);
 
     commands_ += CreateObjectCmd(ev.unit_type, cell_);
