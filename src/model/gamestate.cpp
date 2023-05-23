@@ -14,15 +14,19 @@ const char END_COMMAND = 'e';
 const char B_UNIT = 'b';
 const char K_UNIT = 'k';
 
+const uint UNITS_NUM = 3;
+const uint STEP_POINTS = 4;
+
 using std::cout, std::endl;
 
 Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
     : monitor_(std::move(monitor)),
       handler_(std::move(handler)),
       state_(State::PREPARE),
-      cell_(-1, 1),
+      cell_(0, 0),
       obj_(nullptr),
       turn_(true),
+      points_(UNITS_NUM),
       commands_() {
     uint rows = FIELD_HEIGHT;
     uint cols = FILED_WIDTH;
@@ -170,6 +174,10 @@ State Game::OnPrepareCellChosenUnchose(GameEvent ev) {
 }
 
 State Game::OnPrepareCreateObject(GameEvent ev) {
+    if (points_ <= 0) {
+        cout << "Step points are over!" << endl;
+        return State::ERROR;
+    }
     if (!field_->IsMyPart(cell_)) return State::ERROR;
     if (!field_->IsEmpty(cell_)) return State::ERROR;
 
@@ -179,6 +187,7 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
 
     commands_ += CreateObjectCmd(ev.unit_type, cell_);
     field_->Reset();
+    --points_;
 
     cout << "Created!" << endl;
     return State::PREPARE;
@@ -199,6 +208,7 @@ State Game::OnPrepareFinish(GameEvent ev) {
 State Game::OnWaitFinish(GameEvent ev) {
     HandleCommands(ev.cmds);
     turn_ = true;
+    points_ = STEP_POINTS;
     cout << "Wait finished!" << endl;
     return State::STEP;
 }
@@ -219,6 +229,7 @@ State Game::OnStepChose(GameEvent ev) {
 
 State Game::OnStepFinish(GameEvent ev) {
     turn_ = false;
+    field_->Reset();
 
     commands_ += END_COMMAND;
     // отправка на сервер
@@ -229,6 +240,11 @@ State Game::OnStepFinish(GameEvent ev) {
 }
 
 State Game::OnUnitChosenChose(GameEvent ev) {
+    if (points_ <= 0) {
+        cout << "Step points are over!" << endl;
+        return State::ERROR;
+    }
+
     sf::Vector2u chosen_cell = {ev.cords.x, ev.cords.y};
 
     if (field_->IsEmpty(chosen_cell) &&
@@ -238,8 +254,9 @@ State Game::OnUnitChosenChose(GameEvent ev) {
             field_->MoveObject(cell_, chosen_cell);
 
             commands_ += MoveObjectCmd(cell_, chosen_cell);
-
             field_->Reset();
+            --points_;
+
             cout << "Moved!" << endl;
             return State::STEP;
         } else {
@@ -262,9 +279,9 @@ State Game::OnUnitChosenChose(GameEvent ev) {
 
             commands_ += AttackObjectCmd(cell_, chosen_cell);
             field_->Reset();
+            --points_;
 
             cout << "Attacked!" << endl;
-
             return State::STEP;
         } else {
             cout << "Cannot attack this unit" << endl;
