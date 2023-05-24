@@ -14,15 +14,19 @@ const char END_COMMAND = 'e';
 const char B_UNIT = 'b';
 const char K_UNIT = 'k';
 
+const uint UNITS_NUM = 3;
+const uint STEP_POINTS = 999;
+
 using std::cout, std::endl;
 
 Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
     : monitor_(std::move(monitor)),
       handler_(std::move(handler)),
       state_(State::PREPARE),
-      cell_(-1, 1),
+      cell_(0, 0),
       obj_(nullptr),
       turn_(true),
+      points_(UNITS_NUM),
       commands_() {
     uint rows = FIELD_HEIGHT;
     uint cols = FILED_WIDTH;
@@ -33,13 +37,13 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
 
 void Game::StartGame() {
     while (!monitor_->isEnd()) {
-        HandleInput();
+        GameEvent ev = handler_->Handle();
+        HandleInput(ev);
         Render();
     }
 }
 
-void Game::HandleInput() {
-    GameEvent ev = handler_->Handle();
+void Game::HandleInput(GameEvent ev) {
     State new_state = State::ERROR;
     if (-1 < ev.type && ev.type < transitions[state_].size())
         new_state = transitions[state_][ev.type](ev);
@@ -74,7 +78,25 @@ void Game::HandleCommands(string commands) {
             } break;
 
             case ATTACK_COMMAND: {
-                cout << "Здесь должна быть атака, но ее не будет" << endl;
+                sf::Vector2u from{0, 0};
+                sf::Vector2u to{0, 0};
+
+                command_stream >> from.x >> from.y;
+                command_stream >> to.x >> to.y;
+
+                RevertXCord(from.x);
+                RevertXCord(to.x);
+
+                unique_ptr<Attack> attack =
+                    std::make_unique<Attack>(0, 0, from, false);
+                shared_ptr<GameObject> attack_obj = field_->GetObject(from);
+                shared_ptr<GameObject> attacked_obj = field_->GetObject(to);
+
+                attack_obj->DoAction(ActionType::ATTACK, attack.get());
+                attacked_obj->DoAction(ActionType::GET_ATTACKED, attack.get());
+
+                if (attack->is_dead) field_->DeleteObject(to);
+
             } break;
 
             case MOVE_COMMAND: {
@@ -88,11 +110,9 @@ void Game::HandleCommands(string commands) {
                 RevertXCord(to.x);
 
                 shared_ptr<GameObject> chosen_object = field_->GetObject(from);
-                obj_->DoAction(ActionType::MOVE, to);
+                chosen_object->DoAction(ActionType::MOVE, to);
                 field_->MoveObject(from, to);
-            }
-
-            break;
+            } break;
         }
     } while (cmd != END_COMMAND);
 }
@@ -117,6 +137,24 @@ char Game::MapUnitType(UnitType type) {
             return K_UNIT;
             break;
     }
+}
+
+bool Game::AmIWon() {
+    auto objects = field_->Objects();
+    int alive_enemy_objects = 0;
+    for (auto obj : objects) {
+        if (obj != nullptr && !obj->IsMine()) alive_enemy_objects++;
+    }
+    return alive_enemy_objects == 0;
+}
+
+bool Game::AmILost() {
+    auto objects = field_->Objects();
+    int alive_my_objects = 0;
+    for (auto obj : objects) {
+        if (obj != nullptr && obj->IsMine()) alive_my_objects++;
+    }
+    return alive_my_objects == 0;
 }
 
 string Game::CreateObjectCmd(UnitType type, sf::Vector2u pos) {
@@ -170,6 +208,11 @@ State Game::OnPrepareCellChosenUnchose(GameEvent ev) {
 }
 
 State Game::OnPrepareCreateObject(GameEvent ev) {
+    if (points_ <= 0) {
+        cout << "Step points are over!" << endl;
+        return State::ERROR;
+    }
+
     if (!field_->IsMyPart(cell_)) return State::ERROR;
     if (!field_->IsEmpty(cell_)) return State::ERROR;
 
@@ -178,6 +221,8 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
                        cell_);
 
     commands_ += CreateObjectCmd(ev.unit_type, cell_);
+    field_->Reset();
+    --points_;
 
     cout << "Created!" << endl;
     return State::PREPARE;
@@ -197,7 +242,14 @@ State Game::OnPrepareFinish(GameEvent ev) {
 
 State Game::OnWaitFinish(GameEvent ev) {
     HandleCommands(ev.cmds);
+
+    if (AmILost()) {
+        cout << "LOSE!" << endl;
+        exit(0);
+    }
+
     turn_ = true;
+    points_ = STEP_POINTS;
     cout << "Wait finished!" << endl;
     return State::STEP;
 }
@@ -218,16 +270,27 @@ State Game::OnStepChose(GameEvent ev) {
 
 State Game::OnStepFinish(GameEvent ev) {
     turn_ = false;
+    field_->Reset();
 
     commands_ += END_COMMAND;
     // отправка на сервер
     commands_ = "";
+
+    if (AmIWon()) {
+        cout << "WIN!" << endl;
+        exit(0);
+    }
 
     cout << "Wait!" << endl;
     return State::WAIT;
 }
 
 State Game::OnUnitChosenChose(GameEvent ev) {
+    if (points_ <= 0) {
+        cout << "Step points are over!" << endl;
+        return State::ERROR;
+    }
+
     sf::Vector2u chosen_cell = {ev.cords.x, ev.cords.y};
 
     if (field_->IsEmpty(chosen_cell) &&
@@ -237,8 +300,9 @@ State Game::OnUnitChosenChose(GameEvent ev) {
             field_->MoveObject(cell_, chosen_cell);
 
             commands_ += MoveObjectCmd(cell_, chosen_cell);
-
             field_->Reset();
+            --points_;
+
             cout << "Moved!" << endl;
             return State::STEP;
         } else {
@@ -246,10 +310,29 @@ State Game::OnUnitChosenChose(GameEvent ev) {
             return State::ERROR;
         }
     } else {
-        cout << "Здесь должна быть атака, но ее не будет" << endl;
-        commands_ += AttackObjectCmd(cell_, chosen_cell);
-        field_->Reset();
-        return State::STEP;
+        unique_ptr<Attack> attack =
+            std::make_unique<Attack>(0, 0, cell_, false);
+
+        if (obj_->CanDoAction(ActionType::ATTACK, attack.get())) {
+            obj_->DoAction(ActionType::ATTACK, attack.get());
+        }
+
+        shared_ptr<GameObject> attacked_obj = field_->GetObject(chosen_cell);
+        if (attacked_obj->CanDoAction(ActionType::GET_ATTACKED, attack.get())) {
+            attacked_obj->DoAction(ActionType::GET_ATTACKED, attack.get());
+
+            if (attack->is_dead) field_->DeleteObject(chosen_cell);
+
+            commands_ += AttackObjectCmd(cell_, chosen_cell);
+            field_->Reset();
+            --points_;
+
+            cout << "Attacked!" << endl;
+            return State::STEP;
+        } else {
+            cout << "Cannot attack this unit" << endl;
+            return State::ERROR;
+        }
     }
 }
 

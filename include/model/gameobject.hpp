@@ -58,6 +58,11 @@ struct Attack {
     int damage;
     int range;
     sf::Vector2u attack_pos;
+
+    bool is_dead;
+
+    Attack(int dmg, int r, sf::Vector2u pos, bool dead)
+        : damage(dmg), range(r), attack_pos(pos), is_dead(dead) {}
 };
 
 class AttackAction : public IAction {
@@ -95,6 +100,7 @@ class GetAttackedAction : public IAction {
     void DoAction(std::any params) override {
         Attack *attack = std::any_cast<Attack *>(params);
         hp_ -= (attack->damage - 0.3 * armor_);
+        if (hp_ <= 0) attack->is_dead = true;
     }
 
     bool CanDoAction(std::any params) const override {
