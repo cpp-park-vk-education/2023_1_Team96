@@ -33,8 +33,8 @@ class Field {
     bool IsMyPart(Vector2u pos) { return pos.x < w_ / 2; }
     bool IsEmpty(Vector2u pos) { return objects_[index(pos)] == nullptr; }
 
-    void Choose(const sf::Vector2u& pos) { model_->setCurrent(pos); }
-    void Reset() { model_->resetCurrent(); }
+    void Choose(const sf::Vector2u& pos) { model_->SetCurrent(pos); }
+    void Reset() { model_->ResetCurrent(); }
 
     shared_ptr<GameObject> GetObject(Vector2u pos) {
         return objects_[index(pos)];
