@@ -26,7 +26,7 @@ class Field {
     Field(uint h, uint w, unique_ptr<SFMLFieldModel>&& f_model)
         : h_(h), w_(w), objects_(h * w), model_(std::move(f_model)) {}
 
-    bool CreateUnit(UnitType type, bool isMine, unique_ptr<IObjectModel> model,
+    bool CreateUnit(UnitType type, bool is_mine, unique_ptr<IObjectModel> model,
                     sf::Vector2u pos);
 
     bool IsValidPosition(Vector2u pos);
@@ -46,4 +46,5 @@ class Field {
     void Draw();
 
     uint Width() const { return w_; }
+    const vector<shared_ptr<GameObject>>& Objects() const { return objects_; }
 };

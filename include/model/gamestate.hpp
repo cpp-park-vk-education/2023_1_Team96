@@ -41,6 +41,7 @@ class Game {
     sf::Vector2u cell_;
     shared_ptr<GameObject> obj_;
     bool turn_;
+    uint points_;
 
     string commands_;
 
@@ -48,6 +49,8 @@ class Game {
     void RevertXCord(uint& x_cord) { x_cord = field_->Width() - 1 - x_cord; };
     UnitType MapUnitType(char type);
     char MapUnitType(UnitType type);
+    bool AmIWon();
+    bool AmILost();
 
     string CreateObjectCmd(UnitType type, sf::Vector2u pos);
     string MoveObjectCmd(sf::Vector2u from, sf::Vector2u to);
@@ -75,10 +78,10 @@ class Game {
     vector<vector<GameEventHandler>> transitions = {
                                   /*CHOSE*/                                                  /*UNCHOSE*/                                      /*CREATE_OBJECT*/                           /*MOVE_CMD*/          /*ATTACK_CMD*/        /*FINISH*/
         /*PREPARE*/             { BIND(OnPrepareChose), /*to PREPARE_CELL_CHOSEN*/           BIND(OnError),                                   BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnPrepareFinish) /*to WAIT*/ },
-        /*PREPARE_CELL_CHOSEN*/ { BIND(OnPrepareCellChosenChose), /*to PREPARE_CELL_CHOSEN*/ BIND(OnPrepareCellChosenUnchose), /*to PREPARE*/ BIND(OnPrepareCreateObject), /*to PREPARE*/ BIND(OnError),        BIND(OnError),        BIND(OnError)                     },
+        /*PREPARE_CELL_CHOSEN*/ { BIND(OnPrepareCellChosenChose), /*to PREPARE_CELL_CHOSEN*/ BIND(OnPrepareCellChosenUnchose), /*to PREPARE*/ BIND(OnPrepareCreateObject), /*to PREPARE*/ BIND(OnError),        BIND(OnError),        BIND(OnPrepareFinish) /*to WAIT*/ },
         /*WAIT*/                { BIND(OnError),                                             BIND(OnError),                                   BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnWaitFinish) /*to STEP*/    },
         /*STEP*/                { BIND(OnStepChose), /*to UNIT_CHOSEN*/                      BIND(OnError),                                   BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnStepFinish) /*to WAIT*/    },
-        /*UNIT_CHOSEN*/         { BIND(OnUnitChosenChose), /*to STEP*/                       BIND(OnUnitChosenUnchose), /*to STEP*/           BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnError)                     }
+        /*UNIT_CHOSEN*/         { BIND(OnUnitChosenChose), /*to STEP*/                       BIND(OnUnitChosenUnchose), /*to STEP*/           BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnStepFinish) /*to WAIT*/    }
     };
 
    public:
@@ -86,6 +89,6 @@ class Game {
 
     void StartGame();
 
-    void HandleInput();
+    void HandleInput(GameEvent ev);
     void Render();
 };
