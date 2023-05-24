@@ -139,6 +139,24 @@ char Game::MapUnitType(UnitType type) {
     }
 }
 
+bool Game::AmIWon() {
+    auto objects = field_->Objects();
+    int alive_enemy_objects = 0;
+    for (auto obj : objects) {
+        if (obj != nullptr && !obj->IsMine()) alive_enemy_objects++;
+    }
+    return alive_enemy_objects == 0;
+}
+
+bool Game::AmILost() {
+    auto objects = field_->Objects();
+    int alive_my_objects = 0;
+    for (auto obj : objects) {
+        if (obj != nullptr && obj->IsMine()) alive_my_objects++;
+    }
+    return alive_my_objects == 0;
+}
+
 string Game::CreateObjectCmd(UnitType type, sf::Vector2u pos) {
     std::stringstream cmd;
     cmd << CREATE_COMMAND << " ";
@@ -194,6 +212,7 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
         cout << "Step points are over!" << endl;
         return State::ERROR;
     }
+
     if (!field_->IsMyPart(cell_)) return State::ERROR;
     if (!field_->IsEmpty(cell_)) return State::ERROR;
 
@@ -223,6 +242,12 @@ State Game::OnPrepareFinish(GameEvent ev) {
 
 State Game::OnWaitFinish(GameEvent ev) {
     HandleCommands(ev.cmds);
+
+    if (AmILost()) {
+        cout << "LOSE!" << endl;
+        exit(0);
+    }
+
     turn_ = true;
     points_ = STEP_POINTS;
     cout << "Wait finished!" << endl;
@@ -250,6 +275,11 @@ State Game::OnStepFinish(GameEvent ev) {
     commands_ += END_COMMAND;
     // отправка на сервер
     commands_ = "";
+
+    if (AmIWon()) {
+        cout << "WIN!" << endl;
+        exit(0);
+    }
 
     cout << "Wait!" << endl;
     return State::WAIT;

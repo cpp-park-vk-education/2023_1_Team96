@@ -49,6 +49,8 @@ class Game {
     void RevertXCord(uint& x_cord) { x_cord = field_->Width() - 1 - x_cord; };
     UnitType MapUnitType(char type);
     char MapUnitType(UnitType type);
+    bool AmIWon();
+    bool AmILost();
 
     string CreateObjectCmd(UnitType type, sf::Vector2u pos);
     string MoveObjectCmd(sf::Vector2u from, sf::Vector2u to);
