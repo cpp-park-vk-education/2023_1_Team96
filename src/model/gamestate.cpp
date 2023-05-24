@@ -31,12 +31,12 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
     uint rows = FIELD_HEIGHT;
     uint cols = FILED_WIDTH;
     unique_ptr<SFMLFieldModel> field_model =
-        monitor_->getFieldModel(rows, cols);
+        monitor_->GetFieldModel();
     field_ = std::make_unique<Field>(rows, cols, move(field_model));
 }
 
 void Game::StartGame() {
-    while (!monitor_->isEnd()) {
+    while (!monitor_->IsEnd()) {
         GameEvent ev = handler_->Handle();
         HandleInput(ev);
         Render();
@@ -73,7 +73,7 @@ void Game::HandleCommands(string commands) {
 
                 field_->CreateUnit(
                     unit_type, turn_,
-                    std::move(monitor_->getModel(ModelType::B_MODEL, false)),
+                    std::move(monitor_->GetModel(ModelType::B_MODEL, turn_)),
                     pos);
             } break;
 
@@ -217,7 +217,7 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
     if (!field_->IsEmpty(cell_)) return State::ERROR;
 
     field_->CreateUnit(ev.unit_type, turn_,
-                       std::move(monitor_->getModel(ModelType::B_MODEL, turn_)),
+                       std::move(monitor_->GetModel(ModelType::B_MODEL, turn_)),
                        cell_);
 
     commands_ += CreateObjectCmd(ev.unit_type, cell_);
@@ -315,6 +315,7 @@ State Game::OnUnitChosenChose(GameEvent ev) {
 
         if (obj_->CanDoAction(ActionType::ATTACK, attack.get())) {
             obj_->DoAction(ActionType::ATTACK, attack.get());
+            obj_->GetModel().Attack();
         }
 
         shared_ptr<GameObject> attacked_obj = field_->GetObject(chosen_cell);

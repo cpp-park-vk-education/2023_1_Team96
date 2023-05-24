@@ -1,12 +1,13 @@
-#include "model/gamestate.hpp"
 #include "graphics/sfml_monitor.hpp"
 #include "input/sfml_input.hpp"
+#include "model/gamestate.hpp"
 
-int main()
-{
-    std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000,600});
+int main() {
+    std::unique_ptr<SFMLWindow> monitor =
+        std::make_unique<SFMLWindow>("Tactics", sf::Vector2u{1000, 600});
 
-    std::unique_ptr<SFMLWindowHandler> handler = std::make_unique<SFMLWindowHandler>(monitor->getWindow());
+    std::unique_ptr<SFMLWindowHandler> handler =
+        std::make_unique<SFMLWindowHandler>(monitor->GetWindow());
 
     Game game(std::move(monitor), std::move(handler));
 

@@ -39,8 +39,8 @@ void Field::DeleteObject(Vector2u pos) {
 };
 
 void Field::Draw() {
-    model_->draw();
+    model_->Draw();
     for (std::shared_ptr<GameObject> object : objects_) {
-        if (object) object->GetModel().draw();
+        if (object) object->GetModel().Draw();
     }
 };
