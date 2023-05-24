@@ -36,7 +36,7 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
 }
 
 void Game::StartGame() {
-    while (!monitor_->isEnd()) {
+    //while (!monitor_->isEnd()) {
         GameEvent ev = handler_->Handle();
         HandleInput(ev);
         Render();
@@ -52,6 +52,7 @@ void Game::HandleInput(GameEvent ev) {
 
 void Game::Render() {
     monitor_->Prepare();
+    std::cout << "render" << std::endl;
     field_->Draw();
     monitor_->Draw();
 }
