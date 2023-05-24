@@ -36,7 +36,7 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
 }
 
 void Game::StartGame() {
-    while (!monitor_->isEnd()) {
+    while (!monitor_->IsEnd()) {
         GameEvent ev = handler_->Handle();
         HandleInput(ev);
         Render();
