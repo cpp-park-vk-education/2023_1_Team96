@@ -28,14 +28,14 @@ class SFMLFieldModel : public IFieldModel, public SFMLModel {
     sf::Vector2u size;
     sf::Sprite s_map;
     sf::Texture tile_set;
-    sf::Vector2i current;
+    sf::Vector2u current;
 
    public:
     SFMLFieldModel(sf::RenderWindow &_window, uint cols, uint rows);
 
     void draw() override;
 
-    void setCurrent(sf::Vector2i pos) override { current = pos; };
+    void setCurrent(sf::Vector2u pos) override { current = pos; };
 
     void resetCurrent() override {
         current.x = -1;
@@ -49,7 +49,7 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
     sf::Texture tile_set;
 
    public:
-    SFMLUnitModel(sf::RenderWindow &_window);
+    SFMLUnitModel(sf::RenderWindow &_window, bool isMine);
 
     void draw() override;
 
@@ -75,7 +75,7 @@ class SFMLWindow {
 
     bool isEnd() { return !m_window.isOpen(); }
 
-    std::unique_ptr<IObjectModel> getModel(ModelType type);
+    std::unique_ptr<IObjectModel> getModel(ModelType type, bool isMine);
 
     std::unique_ptr<SFMLFieldModel> getFieldModel(uint cols, uint rows);
 

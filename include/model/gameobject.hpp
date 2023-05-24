@@ -17,7 +17,7 @@ class GameObject {
     std::map<ActionType, std::unique_ptr<IAction>> actions_;
     sf::Vector2u pos_;
     std::shared_ptr<Player> player_;
-    bool isMine;
+    bool is_mine_;
     std::unique_ptr<IObjectModel> model_;
 
    public:
@@ -25,9 +25,9 @@ class GameObject {
     GameObject(std::shared_ptr<Player> player, bool isMine,
                std::unique_ptr<IObjectModel> model, sf::Vector2u pos);
 
-    bool is_mine() { return isMine; }
+    bool IsMine() { return is_mine_; }
 
-    IObjectModel &getModel() { return *model_; }
+    IObjectModel &GetModel() { return *model_; }
 
     inline const std::shared_ptr<Player> &GetPlayer() const { return player_; };
 
@@ -58,6 +58,11 @@ struct Attack {
     int damage;
     int range;
     sf::Vector2u attack_pos;
+
+    bool is_dead;
+
+    Attack(int dmg, int r, sf::Vector2u pos, bool dead)
+        : damage(dmg), range(r), attack_pos(pos), is_dead(dead) {}
 };
 
 class AttackAction : public IAction {
@@ -95,6 +100,7 @@ class GetAttackedAction : public IAction {
     void DoAction(std::any params) override {
         Attack *attack = std::any_cast<Attack *>(params);
         hp_ -= (attack->damage - 0.3 * armor_);
+        if (hp_ <= 0) attack->is_dead = true;
     }
 
     bool CanDoAction(std::any params) const override {
@@ -120,7 +126,7 @@ class MoveAction : public IAction {
     void DoAction(std::any params) override {
         sf::Vector2u new_pos = std::any_cast<sf::Vector2u>(params);
         owner_.SetPos(new_pos);
-        owner_.getModel().Move(new_pos);
+        owner_.GetModel().Move(new_pos);
     }
 
     bool CanDoAction(std::any params) const override {

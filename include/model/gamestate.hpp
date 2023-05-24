@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-#include <stack>
 #include <functional>
+#include <memory>
+#include <stack>
+#include <vector>
 
 #include "field.hpp"
 #include "graphics/sfml_monitor.hpp"
@@ -11,15 +11,23 @@
 #include "server/client.hpp"
 
 using namespace std::placeholders;
+using std::shared_ptr;
+using std::stack;
+using std::string;
 using std::unique_ptr;
 using std::vector;
-using std::stack;
-using std::shared_ptr;
-using std::string;
 
 #define BIND(function) std::bind(&Game::function, this, std::placeholders::_1)
 
-enum State { PREPARE, PREPARE_CELL_CHOSEN, WAIT, STEP, UNIT_CHOSEN, STEP_CELL_CHOSEN, ERROR };
+enum State {
+    PREPARE,
+    PREPARE_CELL_CHOSEN,
+    WAIT,
+    STEP,
+    UNIT_CHOSEN,
+    STEP_CELL_CHOSEN,
+    ERROR
+};
 
 class Game {
    private:
@@ -30,19 +38,23 @@ class Game {
     unique_ptr<Field> field_;
 
     State state_;
-    sf::Vector2i cell_;
+    sf::Vector2u cell_;
     shared_ptr<GameObject> obj_;
     bool turn_;
+    uint points_;
 
     string commands_;
 
     void HandleCommands(string commands);
-    void RevertXCord(int& x_cord) { x_cord = 14 - x_cord; };
+    void RevertXCord(uint& x_cord) { x_cord = field_->Width() - 1 - x_cord; };
     UnitType MapUnitType(char type);
+    char MapUnitType(UnitType type);
+    bool AmIWon();
+    bool AmILost();
 
-    string CreateObjectCmd(UnitType type, sf::Vector2i pos);
-    string MoveObjectCmd(sf::Vector2i from, sf::Vector2i to);
-    string AttackObjectCmd(sf::Vector2i from, sf::Vector2i to);
+    string CreateObjectCmd(UnitType type, sf::Vector2u pos);
+    string MoveObjectCmd(sf::Vector2u from, sf::Vector2u to);
+    string AttackObjectCmd(sf::Vector2u from, sf::Vector2u to);
 
     State OnError(GameEvent ev) { return State::ERROR; }
 
@@ -66,19 +78,17 @@ class Game {
     vector<vector<GameEventHandler>> transitions = {
                                   /*CHOSE*/                                                  /*UNCHOSE*/                                      /*CREATE_OBJECT*/                           /*MOVE_CMD*/          /*ATTACK_CMD*/        /*FINISH*/
         /*PREPARE*/             { BIND(OnPrepareChose), /*to PREPARE_CELL_CHOSEN*/           BIND(OnError),                                   BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnPrepareFinish) /*to WAIT*/ },
-        /*PREPARE_CELL_CHOSEN*/ { BIND(OnPrepareCellChosenChose), /*to PREPARE_CELL_CHOSEN*/ BIND(OnPrepareCellChosenUnchose), /*to PREPARE*/ BIND(OnPrepareCreateObject), /*to PREPARE*/ BIND(OnError),        BIND(OnError),        BIND(OnError)                     },
+        /*PREPARE_CELL_CHOSEN*/ { BIND(OnPrepareCellChosenChose), /*to PREPARE_CELL_CHOSEN*/ BIND(OnPrepareCellChosenUnchose), /*to PREPARE*/ BIND(OnPrepareCreateObject), /*to PREPARE*/ BIND(OnError),        BIND(OnError),        BIND(OnPrepareFinish) /*to WAIT*/ },
         /*WAIT*/                { BIND(OnError),                                             BIND(OnError),                                   BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnWaitFinish) /*to STEP*/    },
         /*STEP*/                { BIND(OnStepChose), /*to UNIT_CHOSEN*/                      BIND(OnError),                                   BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnStepFinish) /*to WAIT*/    },
-        /*UNIT_CHOSEN*/         { BIND(OnUnitChosenChose), /*to STEP*/                       BIND(OnUnitChosenUnchose), /*to STEP*/           BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnError)                     }
+        /*UNIT_CHOSEN*/         { BIND(OnUnitChosenChose), /*to STEP*/                       BIND(OnUnitChosenUnchose), /*to STEP*/           BIND(OnError),                              BIND(OnError),        BIND(OnError),        BIND(OnStepFinish) /*to WAIT*/    }
     };
 
    public:
-    Game(unique_ptr<SFMLWindow> monitor,
-         unique_ptr<InputHandler> handler);
+    Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler);
 
     void StartGame();
 
-    void HandleInput();
-    void Update() {}
-    void Render();    
+    void HandleInput(GameEvent ev);
+    void Render();
 };

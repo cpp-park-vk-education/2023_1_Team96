@@ -12,7 +12,7 @@ struct GameEvent
 
     union
     {
-        sf::Vector2i cords;
+        sf::Vector2u cords;
         UnitType unit_type;
         char* cmds;
     };

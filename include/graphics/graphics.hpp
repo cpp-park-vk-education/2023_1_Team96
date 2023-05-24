@@ -40,7 +40,7 @@ class IFieldModel : public IModel
 {
 public:
 
-    virtual void setCurrent(sf::Vector2i pos) = 0;
+    virtual void setCurrent(sf::Vector2u pos) = 0;
     virtual void resetCurrent() = 0;
     
     virtual ~IFieldModel() {}
