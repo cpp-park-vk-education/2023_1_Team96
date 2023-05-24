@@ -78,10 +78,10 @@ SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &window, bool is_mine)
     sprite_.setTexture(tile_set_);
 
     if (is_mine)
-        sprite_.setTextureRect(sf::IntRect(296, 220, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(13, 6, CELL_SIZE, CELL_SIZE));
     else
         sprite_.setTextureRect(
-            sf::IntRect(296 + CELL_SIZE, 220, -CELL_SIZE, CELL_SIZE));
+            sf::IntRect(13, 72, CELL_SIZE, CELL_SIZE));
 }
 
 void SFMLUnitModel::Draw() { target_.draw(sprite_); };
