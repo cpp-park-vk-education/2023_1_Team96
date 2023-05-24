@@ -38,6 +38,11 @@ GameEvent SFMLWindowHandler::Handle() {
                     ge.cmds = "c b 2 3 c b 2 4 c b 2 5 e";
                     return ge;
                 }
+                if (event.key.code == sf::Keyboard::LShift) {
+                    GameEvent ge{EventType::FINISH};
+                    ge.cmds = "m 2 4 3 4 e";
+                    return ge;
+                } 
                 break;
         }
     }

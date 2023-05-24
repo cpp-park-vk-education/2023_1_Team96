@@ -15,7 +15,7 @@ const char B_UNIT = 'b';
 const char K_UNIT = 'k';
 
 const uint UNITS_NUM = 3;
-const uint STEP_POINTS = 4;
+const uint STEP_POINTS = 999;
 
 using std::cout, std::endl;
 
@@ -78,7 +78,25 @@ void Game::HandleCommands(string commands) {
             } break;
 
             case ATTACK_COMMAND: {
-                cout << "Здесь должна быть атака, но ее не будет" << endl;
+                sf::Vector2u from{0, 0};
+                sf::Vector2u to{0, 0};
+
+                command_stream >> from.x >> from.y;
+                command_stream >> to.x >> to.y;
+
+                RevertXCord(from.x);
+                RevertXCord(to.x);
+
+                unique_ptr<Attack> attack =
+                    std::make_unique<Attack>(0, 0, from, false);
+                shared_ptr<GameObject> attack_obj = field_->GetObject(from);
+                shared_ptr<GameObject> attacked_obj = field_->GetObject(to);
+
+                attack_obj->DoAction(ActionType::ATTACK, attack.get());
+                attacked_obj->DoAction(ActionType::GET_ATTACKED, attack.get());
+
+                if (attack->is_dead) field_->DeleteObject(to);
+
             } break;
 
             case MOVE_COMMAND: {
@@ -92,11 +110,9 @@ void Game::HandleCommands(string commands) {
                 RevertXCord(to.x);
 
                 shared_ptr<GameObject> chosen_object = field_->GetObject(from);
-                obj_->DoAction(ActionType::MOVE, to);
+                chosen_object->DoAction(ActionType::MOVE, to);
                 field_->MoveObject(from, to);
-            }
-
-            break;
+            } break;
         }
     } while (cmd != END_COMMAND);
 }
