@@ -41,6 +41,8 @@ private :
 
     void mousePressEvent(QMouseEvent *e);
 
+    void keyPressEvent(QKeyEvent *e);
+
     QTimer myTimer;
     bool   myInitialized;   
     std::vector<GameEvent> GameEvents;

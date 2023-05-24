@@ -146,11 +146,50 @@ void QSFMLCanvas::mousePressEvent(QMouseEvent* e){
         pushEvent(ge);
     }
     std::cout << GameEvents.size() << std::endl;
-        
-
 		
+}
 
-		
+void QSFMLCanvas::keyPressEvent(QKeyEvent *e) {
+    std::cout << "key pressed" << std::endl;
+		// sf::Event ev;
+		// ev.type = sf::Event::KeyPressed;
+		// ev.key.code = QtKeyToSFML(event->key());
+
+		// pushEvent(ev);
+    if (e->key() == Qt::Key_Backspace){
+        std::cout << "key backspace pressed" << std::endl;
+        GameEvent ge{EventType::UNCHOSE};
+        pushEvent(ge);
+    }
+
+    if (e->key() == Qt::Key_1){
+        std::cout << "key 111 pressed" << std::endl;
+        GameEvent ge{EventType::CREATE_OBJECT};
+        ge.unit_type = B;
+        pushEvent(ge);
+    }
+
+    if (e->key() == Qt::Key_Return){
+        std::cout << "key enter pressed" << std::endl;
+        GameEvent ge{EventType::FINISH};
+        pushEvent(ge);
+    }
+
+    if (e->key() == Qt::Key_Space){
+        std::cout << "key space pressed" << std::endl;
+        GameEvent ge{EventType::FINISH};
+        ge.cmds = "c b 2 3 c b 2 4 c b 2 5 e";
+        pushEvent(ge);
+    }
+
+    if (e->key() == Qt::Key_Shift){
+        std::cout << "key shift pressed" << std::endl;
+        GameEvent ge{EventType::FINISH};
+        ge.cmds = "a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 e";
+        pushEvent(ge);
+    }
+
+    
 }
 
 QSFMLCanvas::QSFMLCanvas(QWidget* Parent, const QPoint& Position, const QSize& Size, unsigned int FrameTime) :
