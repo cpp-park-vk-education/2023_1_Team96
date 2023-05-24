@@ -37,13 +37,13 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
 
 void Game::StartGame() {
     while (!monitor_->isEnd()) {
-        HandleInput();
+        GameEvent ev = handler_->Handle();
+        HandleInput(ev);
         Render();
     }
 }
 
-void Game::HandleInput() {
-    GameEvent ev = handler_->Handle();
+void Game::HandleInput(GameEvent ev) {
     State new_state = State::ERROR;
     if (-1 < ev.type && ev.type < transitions[state_].size())
         new_state = transitions[state_][ev.type](ev);

@@ -87,6 +87,6 @@ class Game {
 
     void StartGame();
 
-    void HandleInput();
+    void HandleInput(GameEvent ev);
     void Render();
 };
