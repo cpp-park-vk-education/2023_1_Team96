@@ -40,7 +40,7 @@ class IFieldModel : public IModel {
 class IObjectModel : public IModel {
    public:
     virtual void Move(sf::Vector2u pos) = 0;
-    virtual void Attack(sf::Vector2u pos) = 0;
+    virtual void Attack() = 0;
     virtual void GetDamage(int damage) = 0;
 
     virtual ~IObjectModel() {}

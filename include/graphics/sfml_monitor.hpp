@@ -47,6 +47,9 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
    private:
     sf::Sprite sprite_;
     sf::Texture tile_set_;
+    bool is_attack_;
+    bool is_mine_;
+    double attack_frame_;
 
    public:
     SFMLUnitModel(sf::RenderWindow &window, bool is_mine);
@@ -55,7 +58,7 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
 
     void Move(sf::Vector2u pos) override;
 
-    void Attack(sf::Vector2u pos) override {}
+    void Attack() override;
     void GetDamage(int damage) override {}
 };
 

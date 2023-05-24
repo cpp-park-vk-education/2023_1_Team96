@@ -1,5 +1,7 @@
 #include "graphics/sfml_monitor.hpp"
 
+#include <iostream>
+
 const char FIELD_BORDER = '0';
 const char BROKEN_CELL = 'h';
 const char CELL = ' ';
@@ -7,6 +9,8 @@ const char CELL = ' ';
 const string IMG_PATH = "../static/";
 
 const unsigned int CELL_SIZE = 63;
+
+const double ANIMATION_FRAME_TIME = 0.02;
 
 SFMLFieldModel::SFMLFieldModel(sf::RenderWindow &window) : SFMLModel(window) {
     sf::Image map_image;
@@ -71,23 +75,45 @@ void SFMLFieldModel::Draw() {
 };
 
 SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &window, bool is_mine)
-    : SFMLModel(window) {
+    : SFMLModel(window),
+      is_attack_(false),
+      attack_frame_(1),
+      is_mine_(is_mine) {
     sf::Image unit_image;
     unit_image.loadFromFile(IMG_PATH + "unit.png");
     tile_set_.loadFromImage(unit_image);
     sprite_.setTexture(tile_set_);
 
-    if (is_mine)
+    if (is_mine_)
         sprite_.setTextureRect(sf::IntRect(13, 6, CELL_SIZE, CELL_SIZE));
     else
-        sprite_.setTextureRect(
-            sf::IntRect(13, 72, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(13, 72, CELL_SIZE, CELL_SIZE));
 }
 
-void SFMLUnitModel::Draw() { target_.draw(sprite_); };
+void SFMLUnitModel::Draw() {
+    if (is_attack_) {
+        attack_frame_ += ANIMATION_FRAME_TIME;
+        if (attack_frame_ > 3) {
+            is_attack_ = false;
+            attack_frame_ = 0;
+        }
+        if (is_mine_)
+            sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 63) + 13,
+                                               6, CELL_SIZE, CELL_SIZE));
+        else
+            sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 63) + 13,
+                                               72, CELL_SIZE, CELL_SIZE));
+    }
+    target_.draw(sprite_);
+};
 
 void SFMLUnitModel::Move(sf::Vector2u pos) {
     sprite_.setPosition(pos.x * CELL_SIZE, pos.y * CELL_SIZE);
+}
+
+void SFMLUnitModel::Attack() {
+    is_attack_ = true;
+    attack_frame_ = 0;
 }
 
 SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size) {

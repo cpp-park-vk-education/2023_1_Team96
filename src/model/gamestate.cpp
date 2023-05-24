@@ -315,6 +315,7 @@ State Game::OnUnitChosenChose(GameEvent ev) {
 
         if (obj_->CanDoAction(ActionType::ATTACK, attack.get())) {
             obj_->DoAction(ActionType::ATTACK, attack.get());
+            obj_->GetModel().Attack();
         }
 
         shared_ptr<GameObject> attacked_obj = field_->GetObject(chosen_cell);
