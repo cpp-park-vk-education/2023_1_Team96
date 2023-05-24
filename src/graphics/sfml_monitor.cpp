@@ -4,7 +4,7 @@ const char FIELD_BORDER = '0';
 const char BROKEN_CELL = 'h';
 const char CELL = ' ';
 
-const string IMG_PATH = "../images/";
+const string IMG_PATH = "../static/";
 
 const unsigned int CELL_SIZE = 63;
 
