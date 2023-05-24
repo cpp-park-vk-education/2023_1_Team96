@@ -21,11 +21,11 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
 }
 
 void Game::StartGame() {
-    while (!monitor_->isEnd()) {
+    //while (!monitor_->isEnd()) {
         HandleInput();
         Update();
         Render();
-    }
+    //}
 }
 
 void Game::HandleInput() {
