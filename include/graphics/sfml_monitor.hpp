@@ -12,79 +12,76 @@ using std::string;
 
 class SFMLModel : public IModel {
    protected:
-    sf::RenderWindow &target;
+    sf::RenderWindow &target_;
 
    public:
-    SFMLModel(sf::RenderWindow &_target) : target(_target) {}
+    SFMLModel(sf::RenderWindow &target) : target_(target) {}
 
-    virtual void draw() override = 0;
+    virtual void Draw() override = 0;
 
     virtual ~SFMLModel() {}
 };
 
 class SFMLFieldModel : public IFieldModel, public SFMLModel {
    private:
-    std::vector<string> tile_map;
-    sf::Vector2u size;
-    sf::Sprite s_map;
-    sf::Texture tile_set;
-    sf::Vector2u current;
+    std::vector<string> tile_map_;
+    sf::Vector2u size_;
+    sf::Sprite s_map_;
+    sf::Texture tile_set_;
+    sf::Vector2u current_;
 
    public:
-    SFMLFieldModel(sf::RenderWindow &_window, uint cols, uint rows);
+    SFMLFieldModel(sf::RenderWindow &window);
 
-    void draw() override;
+    void Draw() override;
 
-    void setCurrent(sf::Vector2u pos) override { current = pos; };
+    void SetCurrent(sf::Vector2u pos) override { current_ = pos; };
 
-    void resetCurrent() override {
-        current.x = -1;
-        current.y = -1;
+    void ResetCurrent() override {
+        current_.x = -1;
+        current_.y = -1;
     }
 };
 
 class SFMLUnitModel : public SFMLModel, public IObjectModel {
    private:
-    sf::Sprite sprite;
-    sf::Texture tile_set;
+    sf::Sprite sprite_;
+    sf::Texture tile_set_;
+    bool is_attack_;
+    bool is_mine_;
+    double attack_frame_;
 
    public:
-    SFMLUnitModel(sf::RenderWindow &_window, bool isMine);
+    SFMLUnitModel(sf::RenderWindow &window, bool is_mine);
 
-    void draw() override;
+    void Draw() override;
 
     void Move(sf::Vector2u pos) override;
 
-    void Attack(sf::Vector2u pos) override {}
+    void Attack() override;
     void GetDamage(int damage) override {}
 };
 
 class SFMLWindow {
-   public:
-    SFMLWindow(const string &l_title, const sf::Vector2u &l_size, sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle);
-    
-    ~SFMLWindow() { Destroy(); }
-
-    void Prepare() { m_window.clear(); }
-
-    void Draw() { m_window.display(); }
-
-    bool IsOpen() { return m_window.isOpen(); }
-
-    sf::Vector2u GetWindowSize() { return m_windowSize; }
-
-    bool isEnd() { return !m_window.isOpen(); }
-
-    std::unique_ptr<IObjectModel> getModel(ModelType type, bool isMine);
-
-    std::unique_ptr<SFMLFieldModel> getFieldModel(uint cols, uint rows);
-
-    sf::RenderWindow &getWindow() { return m_window; }
-
    private:
-    void Destroy() { m_window.close(); }
+    sf::RenderWindow m_window_;
+    sf::Vector2u m_windowSize_;
+    std::string m_windowTitle_;
 
-    sf::RenderWindow m_window;
-    sf::Vector2u m_windowSize;
-    std::string m_windowTitle;
+    void Destroy() { m_window_.close(); }
+
+   public:
+    SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
+               sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle);
+
+    void Prepare() { m_window_.clear(); }
+    void Draw() { m_window_.display(); }
+    bool IsEnd() { return !m_window_.isOpen(); }
+
+    sf::Vector2u GetWindowSize() { return m_windowSize_; }
+    std::unique_ptr<IObjectModel> GetModel(ModelType type, bool is_mine);
+    std::unique_ptr<SFMLFieldModel> GetFieldModel();
+    sf::RenderWindow &GetWindow() { return m_window_; }
+
+    ~SFMLWindow() { Destroy(); }
 };
