@@ -71,7 +71,8 @@ class SFMLWindow {
     void Destroy() { m_window_.close(); }
 
    public:
-    SFMLWindow(const string &l_title, const sf::Vector2u &l_size, sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle);
+    SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
+               sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle);
 
     void Prepare() { m_window_.clear(); }
     void Draw() { m_window_.display(); }

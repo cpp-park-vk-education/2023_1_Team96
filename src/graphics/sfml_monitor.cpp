@@ -77,7 +77,7 @@ void SFMLFieldModel::Draw() {
 SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &window, bool is_mine)
     : SFMLModel(window),
       is_attack_(false),
-      attack_frame_(1),
+      attack_frame_(0),
       is_mine_(is_mine) {
     sf::Image unit_image;
     unit_image.loadFromFile(IMG_PATH + "unit.png");
@@ -116,13 +116,6 @@ void SFMLUnitModel::Attack() {
     attack_frame_ = 0;
 }
 
-SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size) {
-    m_windowTitle_ = l_title;
-    m_windowSize_ = l_size;
-    m_window_.create(sf::VideoMode(m_windowSize_.x, m_windowSize_.y),
-                     m_windowTitle_);
-}
-
 std::unique_ptr<IObjectModel> SFMLWindow::GetModel(ModelType type,
                                                    bool is_mine) {
     switch (type) {
@@ -136,8 +129,10 @@ std::unique_ptr<SFMLFieldModel> SFMLWindow::GetFieldModel() {
     return std::make_unique<SFMLFieldModel>(m_window_);
 };
 
-SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size, sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle) {
-    m_windowTitle = l_title;
-    m_windowSize = l_size;
-    m_window.create(winhandle);                               //sf::VideoMode(m_windowSize.x, m_windowSize.y),m_windowTitle
+SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
+                       sf::WindowHandle winhandle,
+                       sf::WindowHandle mainwinhandle) {
+    m_windowTitle_ = l_title;
+    m_windowSize_ = l_size;
+    m_window_.create(winhandle);
 }
