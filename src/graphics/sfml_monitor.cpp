@@ -130,8 +130,7 @@ std::unique_ptr<SFMLFieldModel> SFMLWindow::GetFieldModel() {
 };
 
 SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
-                       sf::WindowHandle winhandle,
-                       sf::WindowHandle mainwinhandle) {
+                       sf::WindowHandle winhandle) {
     m_windowTitle_ = l_title;
     m_windowSize_ = l_size;
     m_window_.create(winhandle);

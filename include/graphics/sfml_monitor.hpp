@@ -72,7 +72,7 @@ class SFMLWindow {
 
    public:
     SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
-               sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle);
+               sf::WindowHandle winhandle);
 
     void Prepare() { m_window_.clear(); }
     void Draw() { m_window_.display(); }
