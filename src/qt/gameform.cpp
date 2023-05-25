@@ -26,7 +26,7 @@ GameForm::GameForm(QWidget* parent) : QWidget(parent), ui(new Ui::GameForm) {
             SLOT(onStartTimerClick()));
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
 
-    mywidget = new MyCanvas(this, QPoint(20, 20), QSize(945, 567));
+    mywidget = new GameCanvas(this, QPoint(20, 20), QSize(945, 567));
     mywidget->show();
 
     ui->widget->resize(1000, 600);
@@ -181,7 +181,7 @@ bool QSFMLCanvas::pollEvent(GameEvent& ev) {
     return true;
 }
 
-void MyCanvas::OnUpdate() {
+void GameCanvas::OnUpdate() {
     GameEvent event{EventType::FINISH};
     if (pollEvent(event)) mygame->HandleInput(event);
     mygame->Render();
