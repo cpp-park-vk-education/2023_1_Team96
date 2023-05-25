@@ -24,7 +24,7 @@ GameForm::GameForm(QWidget* parent) : QWidget(parent), ui(new Ui::GameForm) {
             SLOT(onStartTimerClick()));
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
 
-    
+    ui->lcd->setVisible(false);
 
     ui->widget->resize(945, 567);
     ui->widget->show();
