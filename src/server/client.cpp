@@ -26,7 +26,7 @@ void Client::handle_connect(const error_code& error)
  
 void Client::start()
 {
-    std::string msg = "Hello mama!";
+    std::string msg = "Hello!";
     
     std::cout << "Socket is open: " << connection_->get_socket().is_open() << std::endl;
     write(msg);
@@ -38,7 +38,7 @@ void Client::write(const std::string& message)
     if (connection_)
     {
         connection_->write(message);
-        read();
+        //read();
     }
     else
         std::cout << "No connection" << std::endl;
@@ -59,8 +59,13 @@ void Client::read()
 {
     if (connection_)
     {
-        connection_->start();
-        last_comand = connection_->get_last_accepted_str();
+        //connection_->start();
+        connection_->start([this](){
+            std::cout << "Server say: "  << connection_->get_last_accepted_str() << std::endl;
+            last_comand = connection_->get_last_accepted_str();
+            read();
+        });
+        
     }
 }
  

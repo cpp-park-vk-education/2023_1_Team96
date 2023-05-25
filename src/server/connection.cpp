@@ -6,6 +6,7 @@ using namespace boost::placeholders;
 using namespace boost::system;
 
 
+
 void Connection::close()
 {
     error_code ec;
@@ -15,34 +16,21 @@ void Connection::close()
         std::cout << "Error with tryng to close connection" << std::endl;
 }
 
-void Connection::start()
+void Connection::start(callback_t handler)
 {
 //std::cout << "Connection has started reading" << std::endl;
     auto self = shared_from_this();
-    std::cout << "last " << last_accepted_str_ << std::endl;
+    //std::cout << "last " << last_accepted_str_ << std::endl;
     async_read_until(socket_, b, "\r\n",
-    [self](error_code error, size_t bytes_transferred)
+    [handler, self](error_code error, size_t bytes_transferred)
     {
         self->handle_read(error, bytes_transferred);
+        handler();
     });
-    // error_code error;
-    // read_until(socket_, b, "\r\n", error);
-    // std::istream is(&b);
-    // std::getline(is, read_buffer_);
-    // handle_read(error, read_buffer_.size());
-    // socket_.async_read_some(buffer(read_buffer_, 26), [this](error_code error, size_t bytes_transferred)
-    // {
-    //     handle_read(error, bytes_transferred);
-    // }); 
+}
 
-//    std::cout << "Connection has started reading" << std::endl;
-//     size_t bytes_transferred = socket_.read_some(buffer(read_buffer_));
-//     if (bytes_transferred != 0)
-//     {    
-//         std::cout << "URA" << std::endl;
-//     }
-//     error_code error;
-//     handle_read(error, bytes_transferred);   
+void Connection::start() {
+    this->start([](){});
 }
 
 void Connection::handle_read(error_code error, size_t bytes_transferred)
@@ -54,7 +42,6 @@ void Connection::handle_read(error_code error, size_t bytes_transferred)
     b.consume(bytes_transferred);
     std::cout << "Вызван" << std::endl;
 
-    //std::cout << read_buffer_.size() << std::endl;
     if (bytes_transferred != 0)
         std::cout <<"Data has been read\n" << read_buffer_ << std::endl;
     
@@ -63,7 +50,7 @@ void Connection::handle_read(error_code error, size_t bytes_transferred)
         last_accepted_str_ = recived_data;
         
     //  write("Accepted");
-        start();
+        // start();
         //Обработка данных
         //std::cout << "Data has been read" << bytes_transferred << std::endl;
         //start();
