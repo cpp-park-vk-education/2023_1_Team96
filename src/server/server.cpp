@@ -115,8 +115,13 @@ void Match::recieveFromPlayer1()
 {
     if (player1_)
     {
-        player1_->start();
-        std::cout << "Player 1 say: "  << player1_->get_last_accepted_str() << std::endl;
+        player1_->start([this](){
+            std::string str(player1_->get_last_accepted_str());
+            std::cout << "Player 1 say: "  << str << std::endl;
+            if (str != "Hello!" && str != "First")
+                sendToPlayer2(str);
+            recieveFromPlayer1();
+        });
     }
     else
         std::cout << "ERROR" << std::endl;
@@ -126,11 +131,16 @@ void Match::recieveFromPlayer2()
 {
     if (player2_)
     {
-        player2_->start();
-        if (player2_->get_last_accepted_str().size() != 0 )
-        {
-            std::cout << "Player 2 say: "  << player2_->get_last_accepted_str() << std::endl;
-        }
+        player2_->start([this](){
+            if (player2_->get_last_accepted_str().size() != 0 )
+            {
+                std::string str(player2_->get_last_accepted_str());
+                std::cout << "Player 2 say: "  << str << std::endl;
+                if (str != "Hello!")
+                    sendToPlayer1(str);
+                recieveFromPlayer2();
+            }
+        });
     }
     else
         std::cout << "ERROR" << std::endl;

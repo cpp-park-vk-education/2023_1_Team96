@@ -46,3 +46,4 @@ public:
         return is_connected;
     }
 };
+
