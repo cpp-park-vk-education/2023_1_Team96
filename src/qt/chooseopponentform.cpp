@@ -13,8 +13,8 @@ ChooseOpponentForm::ChooseOpponentForm(QWidget *parent) :
     p.setBrush(QPalette::Background, bkgnd);
     this->setAutoFillBackground(true);
     this->setPalette(p);
-
     ui->setupUi(this);
+    
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(nextwidget()));
 }
 

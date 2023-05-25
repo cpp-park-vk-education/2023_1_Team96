@@ -24,8 +24,7 @@ GameForm::GameForm(QWidget* parent) : QWidget(parent), ui(new Ui::GameForm) {
             SLOT(onStartTimerClick()));
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
 
-    game_widget = new QSFMLCanvas(this, QPoint(20, 20), QSize(945, 567));
-    game_widget->show();
+    
 
     ui->widget->resize(945, 567);
     ui->widget->show();
@@ -80,6 +79,9 @@ void GameForm::onStartTimerClick() {
     connect(timer, &QTimer::timeout, updater, &QObject::deleteLater);
     updater->start(1000);
     timer->start(60000);
+
+    game_widget = new QSFMLCanvas(this, QPoint(20, 20), QSize(945, 567));
+    game_widget->show();
 
     std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>(
         "Tactics", sf::Vector2u{945, 567}, game_widget->winId());

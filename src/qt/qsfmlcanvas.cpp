@@ -1,13 +1,18 @@
 #include "qt/qsfmlcanvas.hpp"
 
 void QSFMLCanvas::OnInit() {
-    sf::Texture texture;
-    // Load the image
-    texture.loadFromFile("../static/gamefon.jpg");
 
-    // Setup the sprite
-    mySprite.setTexture(texture);
-    mySprite.setPosition(0, 0);
+    std::cout << "oninit" << std::endl;
+    // sf::Texture texture;
+    // // Load the image
+    // texture.loadFromFile("../static/gamefon.jpg");
+
+    // // Setup the sprite
+    // mySprite.setTexture(texture);
+    // mySprite.setPosition(0, 0);
+
+    clear(sf::Color(0, 128, 0));
+    display();
 }
 
 void QSFMLCanvas::OnUpdate() {
@@ -19,6 +24,7 @@ void QSFMLCanvas::OnUpdate() {
 QPaintEngine* QSFMLCanvas::paintEngine() const { return 0; }
 
 void QSFMLCanvas::showEvent(QShowEvent*) {
+    
     if (!myInitialized) {
         OnInit();
 
