@@ -3,9 +3,11 @@
 void Client::connect()
 {
     std::cout << "Tryng to connect" << std::endl;
-    connection_->get_socket().async_connect(ep_, boost::bind(&Client::handle_connect, this, boost::asio::placeholders::error));
- 
-    std::cout << "skip to the server" << std::endl;
+    //connection_->get_socket().async_connect(ep_, boost::bind(&Client::handle_connect, this, boost::asio::placeholders::error));
+    connection_->get_socket().connect(ep_);
+    is_connected = true;
+    std::cout << "Connected to the server" << std::endl;
+    //std::cout << "skip to the server" << std::endl;
 }
  
 void Client::handle_connect(const error_code& error)
@@ -24,18 +26,20 @@ void Client::handle_connect(const error_code& error)
  
 void Client::start()
 {
-    std::string msg = "Hello server!";
- 
+    std::string msg = "Hello mama!";
+    
+    std::cout << "Socket is open: " << connection_->get_socket().is_open() << std::endl;
     write(msg);
-    context_.run();
  
 }
  
 void Client::write(const std::string& message)
 {
     if (connection_)
+    {
         connection_->write(message);
- 
+        read();
+    }
     else
         std::cout << "No connection" << std::endl;
 }
