@@ -1,7 +1,5 @@
 #include "qt/gameform.h"
 
-#include <QDebug>
-#include <QMouseEvent>
 #include <QPushButton>
 #include <iostream>
 
@@ -26,10 +24,10 @@ GameForm::GameForm(QWidget* parent) : QWidget(parent), ui(new Ui::GameForm) {
             SLOT(onStartTimerClick()));
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
 
-    mywidget = new GameCanvas(this, QPoint(20, 20), QSize(945, 567));
-    mywidget->show();
+    game_widget = new QSFMLCanvas(this, QPoint(20, 20), QSize(945, 567));
+    game_widget->show();
 
-    ui->widget->resize(1000, 600);
+    ui->widget->resize(945, 567);
     ui->widget->show();
 }
 
@@ -84,105 +82,15 @@ void GameForm::onStartTimerClick() {
     timer->start(60000);
 
     std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>(
-        "Tactics", sf::Vector2u{945, 567}, mywidget->winId(), 9999292);
+        "Tactics", sf::Vector2u{945, 567}, game_widget->winId(), 9999292);
 
     std::unique_ptr<SFMLWindowHandler> handler =
         std::make_unique<SFMLWindowHandler>(monitor->GetWindow());
 
-    mywidget->mygame = new Game(std::move(monitor), std::move(handler));
-    mywidget->mygame->Render();
+    game_widget->game = new Game(std::move(monitor), std::move(handler));
+    game_widget->game->Render();
 }
 
 void GameForm::onTimerTimeout() { emit ui->switchButton->clicked(); }
 
 void GameForm::stopTimer() { ui->lcd->setVisible(false); }
-
-void QSFMLCanvas::mousePressEvent(QMouseEvent* e) {
-    if (e->buttons() == Qt::LeftButton) {
-        GameEvent ge{EventType::CHOSE};
-        ge.cords = sf::Vector2u{e->localPos().x() / 63, e->localPos().y() / 63};
-        pushEvent(ge);
-    }
-}
-
-void QSFMLCanvas::keyPressEvent(QKeyEvent* e) {
-    if (e->key() == Qt::Key_Backspace) {
-        GameEvent ge{EventType::UNCHOSE};
-        pushEvent(ge);
-    }
-
-    if (e->key() == Qt::Key_1) {
-        GameEvent ge{EventType::CREATE_OBJECT};
-        ge.unit_type = B;
-        pushEvent(ge);
-    }
-
-    if (e->key() == Qt::Key_Return) {
-        GameEvent ge{EventType::FINISH};
-        pushEvent(ge);
-    }
-
-    if (e->key() == Qt::Key_Space) {
-        GameEvent ge{EventType::FINISH};
-        ge.cmds = "c b 2 3 c b 2 4 c b 2 5 e";
-        pushEvent(ge);
-    }
-
-    if (e->key() == Qt::Key_Shift) {
-        GameEvent ge{EventType::FINISH};
-        ge.cmds = "a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 e";
-        pushEvent(ge);
-    }
-}
-
-QSFMLCanvas::QSFMLCanvas(QWidget* Parent, const QPoint& Position,
-                         const QSize& Size, unsigned int FrameTime)
-    : QWidget(Parent), myInitialized(false) {
-    setAttribute(Qt::WA_PaintOnScreen);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-    setAttribute(Qt::WA_NoSystemBackground);
-
-    setFocusPolicy(Qt::StrongFocus);
-
-    move(Position);
-    resize(Size);
-
-    myTimer.setInterval(FrameTime);
-
-    parentwidget = Parent;
-}
-
-void QSFMLCanvas::showEvent(QShowEvent*) {
-    if (!myInitialized) {
-        OnInit();
-
-        connect(&myTimer, SIGNAL(timeout()), this, SLOT(repaint()));
-        myTimer.start();
-
-        myInitialized = true;
-    }
-}
-
-QPaintEngine* QSFMLCanvas::paintEngine() const { return 0; }
-
-void QSFMLCanvas::paintEvent(QPaintEvent*) {
-    OnUpdate();
-    display();
-}
-
-void QSFMLCanvas::pushEvent(GameEvent& ev) { GameEvents.push_back(ev); }
-
-bool QSFMLCanvas::pollEvent(GameEvent& ev) {
-    if (GameEvents.size() == 0) return false;
-
-    ev = GameEvents.back();
-    GameEvents.pop_back();
-
-    return true;
-}
-
-void GameCanvas::OnUpdate() {
-    GameEvent event{EventType::FINISH};
-    if (pollEvent(event)) mygame->HandleInput(event);
-    mygame->Render();
-}
