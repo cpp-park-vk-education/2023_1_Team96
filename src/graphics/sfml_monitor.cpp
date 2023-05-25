@@ -12,28 +12,56 @@ const unsigned int CELL_SIZE = 63;
 
 const double ANIMATION_FRAME_TIME = 0.02;
 
-SFMLFieldModel::SFMLFieldModel(sf::RenderWindow &window) : SFMLModel(window) {
-    sf::Image map_image;
-    map_image.loadFromFile(IMG_PATH + "map.png");
-    tile_set_.loadFromImage(map_image);
-    s_map_.setTexture(tile_set_);
+SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size) {
+    m_windowTitle_ = l_title;
+    m_windowSize_ = l_size;
+    m_window_.create(sf::VideoMode(m_windowSize_.x, m_windowSize_.y),
+                     m_windowTitle_);
+}
+
+std::unique_ptr<IObjectModel> SFMLWindow::GetModel(ModelType type,
+                                                   bool is_mine) {
+    switch (type) {
+        case B_MODEL:
+            return std::make_unique<SFMLUnitModel>(m_window_, units_set_,
+                                                   is_mine);
+        case K_MODEL:
+            return std::make_unique<SFMLKingModel>(m_window_, units_set_,
+                                                   is_mine);
+    }
+    return nullptr;
+}
+
+std::unique_ptr<SFMLFieldModel> SFMLWindow::GetFieldModel() {
+    return std::make_unique<SFMLFieldModel>(m_window_, tile_set_);
+};
+
+SFMLFieldModel::SFMLFieldModel(sf::RenderWindow &window,
+                               const sf::Texture &texture)
+    : SFMLModel(window) {
+    s_map_.setTexture(texture);
 
     tile_map_ = {
-        "000000000000000",
-        "0          h  0",
-        "0  h          0",
-        "0             0",
-        "0        h    0",
-        "0             0",
-        "0             0",
-        "0    h        0",
-        "000000000000000",
+        "000000000000000", "0          h  0", "0  h          0",
+        "0             0", "0        h    0", "0             0",
+        "0             0", "0    h        0", "000000000000000",
     };
 
     unsigned int w = tile_map_[0].length();
     unsigned int h = tile_map_.size();
     size_ = Vector2u{w, h};
     ResetCurrent();
+};
+
+bool SFMLWindow::loadResources() {
+    sf::Image unit_image;
+    if (!unit_image.loadFromFile(IMG_PATH + "unit.png")) return false;
+    if (!units_set_.loadFromImage(unit_image)) return false;
+
+    sf::Image map_image;
+    if (!map_image.loadFromFile(IMG_PATH + "map.png")) return false;
+    if (!tile_set_.loadFromImage(map_image)) return false;
+    return true;
 };
 
 void SFMLFieldModel::Draw() {
@@ -74,20 +102,18 @@ void SFMLFieldModel::Draw() {
     }
 };
 
-SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &window, bool is_mine)
+SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &window,
+                             const sf::Texture &texture, bool is_mine)
     : SFMLModel(window),
       is_attack_(false),
       attack_frame_(0),
       is_mine_(is_mine) {
-    sf::Image unit_image;
-    unit_image.loadFromFile(IMG_PATH + "unit.png");
-    tile_set_.loadFromImage(unit_image);
-    sprite_.setTexture(tile_set_);
+    sprite_.setTexture(texture);
 
     if (is_mine_)
-        sprite_.setTextureRect(sf::IntRect(13, 6, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(1, 1, CELL_SIZE, CELL_SIZE));
     else
-        sprite_.setTextureRect(sf::IntRect(13, 72, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(1, 65, CELL_SIZE, CELL_SIZE));
 }
 
 void SFMLUnitModel::Draw() {
@@ -98,11 +124,11 @@ void SFMLUnitModel::Draw() {
             attack_frame_ = 0;
         }
         if (is_mine_)
-            sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 63) + 13,
-                                               6, CELL_SIZE, CELL_SIZE));
+            sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 64) + 1,
+                                               1, CELL_SIZE, CELL_SIZE));
         else
-            sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 63) + 13,
-                                               72, CELL_SIZE, CELL_SIZE));
+            sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 64) + 1,
+                                               64, CELL_SIZE, CELL_SIZE));
     }
     target_.draw(sprite_);
 };
@@ -116,23 +142,29 @@ void SFMLUnitModel::Attack() {
     attack_frame_ = 0;
 }
 
-std::unique_ptr<IObjectModel> SFMLWindow::GetModel(ModelType type,
-                                                   bool is_mine) {
-    switch (type) {
-        case B_MODEL:
-            return std::make_unique<SFMLUnitModel>(m_window_, is_mine);
-    }
-    return nullptr;
+SFMLKingModel::SFMLKingModel(sf::RenderWindow &window,
+                             const sf::Texture &texture, bool is_mine)
+    : SFMLModel(window),
+      is_attack_(false),
+      attack_frame_(1),
+      is_mine_(is_mine) {
+    sprite_.setTexture(texture);
+
+    if (is_mine_)
+        sprite_.setTextureRect(sf::IntRect(193, 1, CELL_SIZE, CELL_SIZE));
+    else
+        sprite_.setTextureRect(sf::IntRect(193, 65, CELL_SIZE, CELL_SIZE));
 }
 
-std::unique_ptr<SFMLFieldModel> SFMLWindow::GetFieldModel() {
-    return std::make_unique<SFMLFieldModel>(m_window_);
+void SFMLKingModel::Draw() {
+    target_.draw(sprite_);
 };
 
-SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
-                       sf::WindowHandle winhandle,
-                       sf::WindowHandle mainwinhandle) {
-    m_windowTitle_ = l_title;
-    m_windowSize_ = l_size;
-    m_window_.create(winhandle);
+void SFMLKingModel::Move(sf::Vector2u pos) {
+    sprite_.setPosition(pos.x * CELL_SIZE, pos.y * CELL_SIZE);
+}
+
+void SFMLKingModel::Attack() {
+    is_attack_ = true;
+    attack_frame_ = 0;
 }

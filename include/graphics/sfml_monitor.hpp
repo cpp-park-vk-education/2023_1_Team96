@@ -27,11 +27,10 @@ class SFMLFieldModel : public IFieldModel, public SFMLModel {
     std::vector<string> tile_map_;
     sf::Vector2u size_;
     sf::Sprite s_map_;
-    sf::Texture tile_set_;
     sf::Vector2u current_;
 
    public:
-    SFMLFieldModel(sf::RenderWindow &window);
+    SFMLFieldModel(sf::RenderWindow &window, const sf::Texture& texture);
 
     void Draw() override;
 
@@ -52,7 +51,26 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
     double attack_frame_;
 
    public:
-    SFMLUnitModel(sf::RenderWindow &window, bool is_mine);
+    SFMLUnitModel(sf::RenderWindow &window, const sf::Texture& texture, bool is_mine);
+
+    void Draw() override;
+
+    void Move(sf::Vector2u pos) override;
+
+    void Attack() override;
+    void GetDamage(int damage) override {}
+};
+
+class SFMLKingModel : public SFMLModel, public IObjectModel {
+   private:
+    sf::Sprite sprite_;
+    sf::Texture tile_set_;
+    bool is_attack_;
+    bool is_mine_;
+    double attack_frame_;
+
+   public:
+    SFMLKingModel(sf::RenderWindow &window, const sf::Texture& texture, bool is_mine);
 
     void Draw() override;
 
@@ -67,12 +85,15 @@ class SFMLWindow {
     sf::RenderWindow m_window_;
     sf::Vector2u m_windowSize_;
     std::string m_windowTitle_;
+    sf::Texture tile_set_;
+    sf::Texture units_set_;
 
     void Destroy() { m_window_.close(); }
 
    public:
-    SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
-               sf::WindowHandle winhandle, sf::WindowHandle mainwinhandle);
+
+    SFMLWindow(const string &l_title, const sf::Vector2u &l_size);
+    bool loadResources();
 
     void Prepare() { m_window_.clear(); }
     void Draw() { m_window_.display(); }
