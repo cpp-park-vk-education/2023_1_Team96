@@ -30,7 +30,7 @@ class SFMLFieldModel : public IFieldModel, public SFMLModel {
     sf::Vector2u current_;
 
    public:
-    SFMLFieldModel(sf::RenderWindow &window, const sf::Texture& texture);
+    SFMLFieldModel(sf::RenderWindow &window, const sf::Texture &texture);
 
     void Draw() override;
 
@@ -51,7 +51,8 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
     double attack_frame_;
 
    public:
-    SFMLUnitModel(sf::RenderWindow &window, const sf::Texture& texture, bool is_mine);
+    SFMLUnitModel(sf::RenderWindow &window, const sf::Texture &texture,
+                  bool is_mine);
 
     void Draw() override;
 
@@ -70,7 +71,8 @@ class SFMLKingModel : public SFMLModel, public IObjectModel {
     double attack_frame_;
 
    public:
-    SFMLKingModel(sf::RenderWindow &window, const sf::Texture& texture, bool is_mine);
+    SFMLKingModel(sf::RenderWindow &window, const sf::Texture &texture,
+                  bool is_mine);
 
     void Draw() override;
 
@@ -91,8 +93,8 @@ class SFMLWindow {
     void Destroy() { m_window_.close(); }
 
    public:
-
-    SFMLWindow(const string &l_title, const sf::Vector2u &l_size);
+    SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
+               sf::WindowHandle winhandle);
     bool loadResources();
 
     void Prepare() { m_window_.clear(); }
