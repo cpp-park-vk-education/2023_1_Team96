@@ -32,11 +32,11 @@ GameForm::GameForm(QWidget *parent) :
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
     //connect(ui->widget, SIGNAL(clicked()), this, SLOT(on_widget_clicked()));
 
-    mywidget = new MyCanvas(this, QPoint(20, 20), QSize(1000, 600));
+    mywidget = new MyCanvas(this, QPoint(20, 20), QSize(945, 567));
     mywidget->show();
 
-    ui->widget->resize(1000,600);
-    ui->widget->show();
+    // ui->widget->resize(1000,600);
+    // ui->widget->show();
 
     
     //this->setVisible(false);
