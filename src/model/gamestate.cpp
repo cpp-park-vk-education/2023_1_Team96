@@ -30,17 +30,14 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
       commands_() {
     uint rows = FIELD_HEIGHT;
     uint cols = FILED_WIDTH;
-    unique_ptr<SFMLFieldModel> field_model =
-        monitor_->GetFieldModel();
+    unique_ptr<SFMLFieldModel> field_model = monitor_->GetFieldModel();
     field_ = std::make_unique<Field>(rows, cols, move(field_model));
 }
 
 void Game::StartGame() {
-    while (!monitor_->IsEnd()) {
-        GameEvent ev = handler_->Handle();
-        HandleInput(ev);
-        Render();
-    }
+    GameEvent ev = handler_->Handle();
+    HandleInput(ev);
+    Render();
 }
 
 void Game::HandleInput(GameEvent ev) {

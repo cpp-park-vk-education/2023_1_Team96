@@ -12,11 +12,12 @@ const unsigned int CELL_SIZE = 63;
 
 const double ANIMATION_FRAME_TIME = 0.02;
 
-SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size) {
+SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
+                       sf::WindowHandle winhandle) {
+    loadResources();
     m_windowTitle_ = l_title;
     m_windowSize_ = l_size;
-    m_window_.create(sf::VideoMode(m_windowSize_.x, m_windowSize_.y),
-                     m_windowTitle_);
+    m_window_.create(winhandle);
 }
 
 std::unique_ptr<IObjectModel> SFMLWindow::GetModel(ModelType type,
@@ -42,9 +43,15 @@ SFMLFieldModel::SFMLFieldModel(sf::RenderWindow &window,
     s_map_.setTexture(texture);
 
     tile_map_ = {
-        "000000000000000", "0          h  0", "0  h          0",
-        "0             0", "0        h    0", "0             0",
-        "0             0", "0    h        0", "000000000000000",
+        "000000000000000",
+        "0          h  0",
+        "0  h          0",
+        "0             0",
+        "0        h    0",
+        "0             0",
+        "0             0",
+        "0    h        0",
+        "000000000000000",
     };
 
     unsigned int w = tile_map_[0].length();
@@ -106,7 +113,7 @@ SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &window,
                              const sf::Texture &texture, bool is_mine)
     : SFMLModel(window),
       is_attack_(false),
-      attack_frame_(1),
+      attack_frame_(0),
       is_mine_(is_mine) {
     sprite_.setTexture(texture);
 

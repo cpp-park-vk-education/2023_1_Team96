@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     stackedWidget->addWidget(game);
     this->setCentralWidget(stackedWidget);
     this->setWindowTitle("Tactics");
-    this->setFixedSize(1000,500);
+    this->resize(1400,800);
 
     connect(entrance, SIGNAL(WantToPlay()), this, SLOT(setupSecondWidget()));
     connect(chooseopponent, SIGNAL(WantToPlay()), this, SLOT(setupThirdWidget()));
@@ -45,6 +45,7 @@ void MainWindow::setupFirstWidget(){
 
 void MainWindow::setupThirdWidget(){
     stackedWidget->setCurrentIndex(2);
+    //this->setVisible(false);
 }
 
 
