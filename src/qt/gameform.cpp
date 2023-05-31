@@ -9,7 +9,7 @@
 #include "model/gamestate.hpp"
 #include "ui_gameform.h"
 
-GameForm::GameForm(QWidget* parent) : QWidget(parent), ui(new Ui::GameForm) {
+GameForm::GameForm(MainWindow* parent) : QWidget(parent), ui(new Ui::GameForm) {
     QPalette Pal(palette());
     QPixmap bkgnd(QString(QCoreApplication::applicationDirPath() +
                           "/../static/gamefon.jpg"));
@@ -23,6 +23,10 @@ GameForm::GameForm(QWidget* parent) : QWidget(parent), ui(new Ui::GameForm) {
     connect(ui->startButton, SIGNAL(clicked()), this,
             SLOT(onStartTimerClick()));
     connect(ui->switchButton, SIGNAL(clicked()), this, SLOT(stopTimer()));
+
+    std::cout << parent->winId() << std::endl;
+
+    mainwindow = parent;
 
     ui->lcd->setVisible(false);
 
@@ -106,6 +110,13 @@ void GameForm::onStartTimerClick() {
     game_widget->game->Render();
 }
 
-void GameForm::onTimerTimeout() { emit ui->switchButton->clicked(); }
+void GameForm::onTimerTimeout() { 
+    emit ui->switchButton->clicked();
+}
 
-void GameForm::stopTimer() { ui->lcd->setVisible(false); }
+void GameForm::stopTimer() 
+{ 
+    std::cout << this->mainwindow->winId() << std::endl;
+    mainwindow->client.write("Hello");
+    ui->lcd->setVisible(false); 
+}

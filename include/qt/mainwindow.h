@@ -14,6 +14,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    Client client;
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
@@ -27,7 +28,6 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QStackedWidget *stackedWidget;
-    Client client;
 };
 #endif // MAINWINDOW_H
 
