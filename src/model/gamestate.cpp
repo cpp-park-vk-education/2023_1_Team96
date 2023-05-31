@@ -145,23 +145,9 @@ ModelType Game::GetModelType(UnitType unit_type) {
     }
 }
 
-bool Game::AmIWon() {
-    auto objects = field_->Objects();
-    int alive_enemy_objects = 0;
-    for (auto obj : objects) {
-        if (obj != nullptr && !obj->IsMine()) alive_enemy_objects++;
-    }
-    return alive_enemy_objects == 0;
-}
+bool Game::AmIWon() { return field_->GetEnemyKing() == nullptr; }
 
-bool Game::AmILost() {
-    auto objects = field_->Objects();
-    int alive_my_objects = 0;
-    for (auto obj : objects) {
-        if (obj != nullptr && obj->IsMine()) alive_my_objects++;
-    }
-    return alive_my_objects == 0;
-}
+bool Game::AmILost() { return field_->GetMyKing() == nullptr; }
 
 string Game::CreateObjectCmd(UnitType type, sf::Vector2u pos) {
     std::stringstream cmd;
