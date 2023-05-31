@@ -42,8 +42,9 @@ void Game::StartGame() {
 
 void Game::HandleInput(GameEvent ev) {
     State new_state = State::ERROR;
-    if (-1 < ev.type && ev.type < transitions[state_].size())
+    if (-1 < ev.type && ev.type < transitions[state_].size()) {
         new_state = transitions[state_][ev.type](ev);
+    }
     if (new_state != State::ERROR) state_ = new_state;
 }
 
