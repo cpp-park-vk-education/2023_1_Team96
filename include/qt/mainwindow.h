@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
+#include "server/client.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,6 +27,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QStackedWidget *stackedWidget;
+    Client client;
 };
 #endif // MAINWINDOW_H
 

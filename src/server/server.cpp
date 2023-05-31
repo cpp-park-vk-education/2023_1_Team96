@@ -150,3 +150,5 @@ void Match::SetPlayer2(boost::shared_ptr<Connection> player2)
 {
     player2_ = player2;
 }
+
+
