@@ -49,6 +49,7 @@ class Game {
     void RevertXCord(uint& x_cord) { x_cord = field_->Width() - 1 - x_cord; };
     UnitType MapUnitType(char type);
     char MapUnitType(UnitType type);
+    ModelType GetModelType(UnitType unit_type);
     bool AmIWon();
     bool AmILost();
 
