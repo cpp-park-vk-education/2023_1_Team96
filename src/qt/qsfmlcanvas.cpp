@@ -1,8 +1,8 @@
 #include "qt/qsfmlcanvas.hpp"
+#include "utility/common.h"
 
 void QSFMLCanvas::OnInit() {
 
-    std::cout << "oninit" << std::endl;
     // sf::Texture texture;
     // // Load the image
     // texture.loadFromFile("../static/gamefon.jpg");
@@ -43,7 +43,7 @@ void QSFMLCanvas::paintEvent(QPaintEvent*) {
 void QSFMLCanvas::mousePressEvent(QMouseEvent* e) {
     if (e->buttons() == Qt::LeftButton) {
         GameEvent ge{EventType::CHOSE};
-        ge.cords = sf::Vector2u{e->localPos().x() / 63, e->localPos().y() / 63};
+        ge.cords = sf::Vector2u{e->localPos().x() / CELL_SIZE, e->localPos().y() / CELL_SIZE };
         pushEvent(ge);
     }
 }
