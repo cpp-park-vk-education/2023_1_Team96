@@ -1,14 +1,13 @@
 #include "graphics/sfml_monitor.hpp"
 
 #include <iostream>
+#include "utility/common.h"
 
 const char FIELD_BORDER = '0';
 const char BROKEN_CELL = 'h';
 const char CELL = ' ';
 
 const string IMG_PATH = "../static/";
-
-const unsigned int CELL_SIZE = 63;
 
 const double ANIMATION_FRAME_TIME = 0.02;
 
@@ -41,6 +40,7 @@ SFMLFieldModel::SFMLFieldModel(sf::RenderWindow &window,
                                const sf::Texture &texture)
     : SFMLModel(window) {
     s_map_.setTexture(texture);
+    s_map_.setScale(sf::Vector2f(SCALE,SCALE));
 
     tile_map_ = {
         "000000000000000",
@@ -79,22 +79,22 @@ void SFMLFieldModel::Draw() {
             switch (tile) {
                 case CELL:
                     s_map_.setTextureRect(
-                        sf::IntRect(26, 219, CELL_SIZE, CELL_SIZE));
+                        sf::IntRect(26, 219, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
                     break;
 
                 case FIELD_BORDER:
                     s_map_.setTextureRect(
-                        sf::IntRect(26, 298, CELL_SIZE, CELL_SIZE));
+                        sf::IntRect(26, 298, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
                     break;
 
                 case BROKEN_CELL:
                     s_map_.setTextureRect(
-                        sf::IntRect(106, 219, CELL_SIZE, CELL_SIZE));
+                        sf::IntRect(106, 219, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
                     break;
 
                 default:
                     s_map_.setTextureRect(
-                        sf::IntRect(0, 0, CELL_SIZE, CELL_SIZE));
+                        sf::IntRect(0, 0, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
                     break;
             }
 
@@ -116,11 +116,12 @@ SFMLUnitModel::SFMLUnitModel(sf::RenderWindow &window,
       attack_frame_(0),
       is_mine_(is_mine) {
     sprite_.setTexture(texture);
+    sprite_.setScale(sf::Vector2f(SCALE,SCALE));
 
     if (is_mine_)
-        sprite_.setTextureRect(sf::IntRect(1, 1, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(1, 1, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
     else
-        sprite_.setTextureRect(sf::IntRect(1, 65, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(1, 65, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
 }
 
 void SFMLUnitModel::Draw() {
@@ -132,10 +133,10 @@ void SFMLUnitModel::Draw() {
         }
         if (is_mine_)
             sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 64) + 1,
-                                               1, CELL_SIZE, CELL_SIZE));
+                                               1, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
         else
             sprite_.setTextureRect(sf::IntRect(((int)attack_frame_ * 64) + 1,
-                                               64, CELL_SIZE, CELL_SIZE));
+                                               64, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
     }
     target_.draw(sprite_);
 };
@@ -156,11 +157,12 @@ SFMLKingModel::SFMLKingModel(sf::RenderWindow &window,
       attack_frame_(1),
       is_mine_(is_mine) {
     sprite_.setTexture(texture);
+    sprite_.setScale(sf::Vector2f(SCALE,SCALE));
 
     if (is_mine_)
-        sprite_.setTextureRect(sf::IntRect(193, 1, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(193, 1, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
     else
-        sprite_.setTextureRect(sf::IntRect(193, 65, CELL_SIZE, CELL_SIZE));
+        sprite_.setTextureRect(sf::IntRect(193, 65, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE));
 }
 
 void SFMLKingModel::Draw() {

@@ -36,7 +36,7 @@ void GameForm::finish() { emit CloseWindow(); }
 
 void GameForm::resizeEvent(QResizeEvent* evt) {
     QPixmap bkgnd(QString(QCoreApplication::applicationDirPath() +
-                          "/../static/gamefon.jpg"));
+                          "/../static/gamefon2.jpg"));
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
     QPalette p = palette();
     p.setBrush(QPalette::Background, bkgnd);
@@ -62,6 +62,19 @@ void GameForm::resizeEvent(QResizeEvent* evt) {
          175, ui->finishButton->geometry().width(),
          ui->finishButton->geometry().height()});
 
+    ui->widget->setGeometry(
+        {(parentgeometry.width() - 25 - ui->startButton->geometry().width()- ui->widget->geometry().width()) / 2,
+        25, ui->widget->geometry().width(),
+        ui->widget->geometry().height()});
+
+    // if ( game_widget != nullptr ){
+
+    //     game_widget->setGeometry(
+    //     {(parentgeometry.width() - 25 - ui->startButton->geometry().width()- game_widget->geometry().width()) / 2,
+    //     25, game_widget->geometry().width(),
+    //     game_widget->geometry().height()});
+    // }
+
     QWidget::resizeEvent(evt);
 }
 
@@ -80,7 +93,7 @@ void GameForm::onStartTimerClick() {
     updater->start(1000);
     timer->start(60000);
 
-    game_widget = new QSFMLCanvas(this, QPoint(20, 20), QSize(945, 567));
+    game_widget = new QSFMLCanvas(this, QPoint(20, 20), QSize(1414, 851));
     game_widget->show();
 
     std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>(

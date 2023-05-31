@@ -36,7 +36,7 @@ class GameForm : public QWidget {
    private:
     Ui::GameForm* ui;
     QTimer* timer;
-    QSFMLCanvas* game_widget;
+    QSFMLCanvas* game_widget = nullptr;
 };
 
 #endif  // GAMEFORM_H
