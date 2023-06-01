@@ -11,6 +11,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , client("127.0.0.1", "1234")
 {
     ui->setupUi(this);
 
@@ -36,6 +37,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::setupSecondWidget(){
+    client.connect();
     stackedWidget->setCurrentIndex(1);
 }
 

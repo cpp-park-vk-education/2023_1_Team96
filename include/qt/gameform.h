@@ -7,6 +7,7 @@
 #include <string>
 
 #include "qt/qsfmlcanvas.hpp"
+#include "qt/mainwindow.h"
 
 namespace Ui {
 class GameForm;
@@ -37,6 +38,7 @@ class GameForm : public QWidget {
     Ui::GameForm* ui;
     QTimer* timer;
     QSFMLCanvas* game_widget = nullptr;
+    MainWindow* mainwindow;
 };
 
 #endif  // GAMEFORM_H

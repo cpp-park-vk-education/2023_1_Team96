@@ -1,4 +1,53 @@
-#include "server/server.hpp"
+#include <iostream>
+#include <boost/asio.hpp>
+#include <boost/thread.hpp>
+#include <memory>
+#include <boost/system/error_code.hpp>
+#include "connection.cpp"
+#include <vector>
+
+using namespace boost::asio;
+using namespace boost::placeholders;
+using namespace boost::system;
+
+class Match
+{
+
+private:
+    boost::shared_ptr<Connection> player1_;
+    boost::shared_ptr<Connection> player2_;
+
+public:
+    Match(boost::shared_ptr<Connection> player1, boost::shared_ptr<Connection> player2)
+    :   player1_(player1), player2_(player2)
+    {
+        std::cout << "Match has been created" << std::endl;
+    };
+    void SetPlayer2(boost::shared_ptr<Connection> player2);
+    void sendToPlayer1(const std::string& message);
+    void sendToPlayer2(const std::string& message);
+    void recieveFromPlayer1();
+    void recieveFromPlayer2();
+    void end();
+};
+
+class Server
+{
+private:
+    io_context context_; // объект io_context для обработки событий ввода-вывода
+    ip::tcp::acceptor acceptor_; // объект acceptor для прослушивания входящих соединений
+    std::vector<boost::shared_ptr<Connection>> connections_;
+    boost::shared_ptr<Match> match_;
+    void start_accept();
+    void handle_accept(boost::shared_ptr<Connection> connection, const error_code& error );
+    void handle_stop();
+
+public:
+    Server(const std::string& address, const std::string& port); // конструктор, который создает объект acceptor
+    void start();
+    void stop(); // метод, который останавливает сервер и закрывает все активные соединения
+    
+};
 
 Server::Server(const std::string& address, const std::string& port)
     : context_(), acceptor_(context_)
@@ -152,3 +201,11 @@ void Match::SetPlayer2(boost::shared_ptr<Connection> player2)
 }
 
 
+int main()
+{
+    
+    Server server("127.0.0.1", "1234");
+    server.start();
+
+    return 0;
+}
