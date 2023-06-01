@@ -3,6 +3,8 @@
 enum UnitType {
     B,
     K,
+    T,
+    H,
 };
 
 const unsigned int CELL_TEXTURE_SIZE = 63;

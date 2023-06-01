@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "utility/common.h"
 
-enum EventType { CHOSE, UNCHOSE, CREATE_OBJECT, MOVE_CMD, ATTACK_CMD, FINISH };
+enum EventType { CHOSE, UNCHOSE, CREATE_OBJECT, MOVE_CMD, ATTACK_CMD, FINISH, INFO };
 
 struct GameEvent
 {

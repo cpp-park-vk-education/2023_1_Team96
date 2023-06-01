@@ -8,7 +8,7 @@
 #include "field.hpp"
 #include "graphics/sfml_monitor.hpp"
 #include "input/sfml_input.hpp"
-#include "server/client.hpp"
+// #include "server/client.hpp"
 
 using namespace std::placeholders;
 using std::shared_ptr;
@@ -31,7 +31,7 @@ enum State {
 
 class Game {
    private:
-    unique_ptr<Client> client_;
+    // unique_ptr<Client> client_;
 
     unique_ptr<SFMLWindow> monitor_;
     unique_ptr<InputHandler> handler_;
