@@ -18,7 +18,7 @@ class Field {
    private:
     vector<shared_ptr<GameObject>> objects_;
     unsigned int h_, w_;
-    unique_ptr<SFMLFieldModel> model_;
+    unique_ptr<IFieldModel> model_;
 
     sf::Vector2u my_king_pos_;
     sf::Vector2u enemy_king_pos_;
@@ -33,12 +33,15 @@ class Field {
           my_king_pos_({0, 0}),
           enemy_king_pos_({0, 0}) {}
 
-    void setModel(unique_ptr<SFMLFieldModel>&& f_model)
+    void setModel(unique_ptr<IFieldModel>&& f_model)
     {
         model_ = std::move(f_model);
     }
 
     bool CreateUnit(UnitType type, bool is_mine, unique_ptr<IObjectModel> model,
+                    sf::Vector2u pos);
+
+    bool CreateEnvObject(EnvType type, unique_ptr<IObjectModel> model,
                     sf::Vector2u pos);
 
     bool IsValidPosition(Vector2u pos);

@@ -11,7 +11,7 @@ const char MOVE_COMMAND = 'm';
 const char ATTACK_COMMAND = 'a';
 const char END_COMMAND = 'e';
 
-const char B_UNIT = 'b';
+const char W_UNIT = 'w';
 const char K_UNIT = 'k';
 
 const uint UNITS_NUM = 5;
@@ -44,23 +44,23 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
 
             switch (obj) {
                 case 't':
-                    field_->CreateUnit(T, true,
+                    field_->CreateEnvObject(EnvType::Trees,
                                        std::move(monitor_->GetModel(
-                                           ModelType::T_MODEL, turn_)),
-                                       sf::Vector2u{j, i});
+                                           ModelType::Trees, turn_)),
+                                       sf::Vector2u{static_cast<uint>(j), static_cast<uint>(i)});
                     map[i][j] = ' ';
                     break;
                 case 'h':
-                    field_->CreateUnit(H, true,
+                    field_->CreateEnvObject(EnvType::Camp,
                                        std::move(monitor_->GetModel(
-                                           ModelType::H_MODEL, turn_)),
-                                       sf::Vector2u{j, i});
+                                           ModelType::Camp, turn_)),
+                                       sf::Vector2u{static_cast<uint>(j), static_cast<uint>(i)});
                     map[i][j] = ' ';
                     break;
             }
         }
     }
-    unique_ptr<SFMLFieldModel> field_model = monitor_->GetFieldModel(map);
+    unique_ptr<IFieldModel> field_model = monitor_->GetFieldModel(map);
     field_->setModel(move(field_model));
 }
 
@@ -103,7 +103,7 @@ void Game::HandleCommands(string commands) {
                 field_->CreateUnit(
                     unit_type, turn_,
                     std::move(monitor_->GetModel(
-                        model_type == B ? ModelType::B_MODEL : K_MODEL, turn_)),
+                        model_type, turn_)),
                     pos);
             } break;
 
@@ -149,31 +149,32 @@ void Game::HandleCommands(string commands) {
 
 UnitType Game::MapUnitType(char type) {
     switch (type) {
-        case B_UNIT:
-            return UnitType::B;
+        case W_UNIT:
+            return UnitType::Warrior;
             break;
         case K_UNIT:
-            return UnitType::K;
+            return UnitType::King;
             break;
     }
 }
 
 char Game::MapUnitType(UnitType type) {
     switch (type) {
-        case UnitType::B:
-            return B_UNIT;
+        case UnitType::Warrior:
+            return W_UNIT;
             break;
-        case UnitType::K:
+        case UnitType::King:
             return K_UNIT;
             break;
     }
 }
+
 ModelType Game::GetModelType(UnitType unit_type) {
     switch (unit_type) {
-        case UnitType::B:
-            return ModelType::B_MODEL;
-        case UnitType::K:
-            return ModelType::K_MODEL;
+        case UnitType::Warrior:
+            return ModelType::Warrior;
+        case UnitType::King:
+            return ModelType::King;
     }
 }
 
@@ -244,7 +245,7 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
     bool created = field_->CreateUnit(
         ev.unit_type, turn_,
         std::move(monitor_->GetModel(
-            model_type == B ? ModelType::B_MODEL : K_MODEL, turn_)),
+            model_type, turn_)),
         cell_);
 
     if (!created) {

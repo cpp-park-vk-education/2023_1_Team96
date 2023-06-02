@@ -15,8 +15,8 @@ GameEvent SFMLWindowHandler::Handle() {
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     GameEvent ge{EventType::CHOSE};
-                    ge.cords = sf::Vector2u{event.mouseButton.x / 63,
-                                            event.mouseButton.y / 63};
+                    ge.cords = sf::Vector2u{static_cast<int>(event.mouseButton.x / 63),
+                                            static_cast<int>(event.mouseButton.y / 63)};
                     return ge;
                 }
                 break;
@@ -28,7 +28,7 @@ GameEvent SFMLWindowHandler::Handle() {
                 }
                 if (event.key.code == sf::Keyboard::Num1) {
                     GameEvent ge{EventType::CREATE_OBJECT};
-                    ge.unit_type = B;
+                    ge.unit_type = UnitType::Warrior;
                     return ge;
                 }
                 if (event.key.code == sf::Keyboard::Enter) {

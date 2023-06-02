@@ -43,7 +43,7 @@ void QSFMLCanvas::paintEvent(QPaintEvent*) {
 void QSFMLCanvas::mousePressEvent(QMouseEvent* e) {
     if (e->buttons() == Qt::LeftButton) {
         GameEvent ge{EventType::CHOSE};
-        ge.cords = sf::Vector2u{e->localPos().x() / CELL_SIZE, e->localPos().y() / CELL_SIZE };
+        ge.cords = sf::Vector2u{static_cast<uint>(e->localPos().x() / CELL_SIZE), static_cast<uint>(e->localPos().y() / CELL_SIZE)};
         pushEvent(ge);
     }
 }
@@ -56,19 +56,13 @@ void QSFMLCanvas::keyPressEvent(QKeyEvent* e) {
 
     if (e->key() == Qt::Key_1) {
         GameEvent ge{EventType::CREATE_OBJECT};
-        ge.unit_type = UnitType::B;
+        ge.unit_type = UnitType::Warrior;
         pushEvent(ge);
     }
 
     if (e->key() == Qt::Key_2) {
         GameEvent ge{EventType::CREATE_OBJECT};
-        ge.unit_type = UnitType::K;
-        pushEvent(ge);
-    }
-
-    if (e->key() == Qt::Key_2) {
-        GameEvent ge{EventType::CREATE_OBJECT};
-        ge.unit_type = K;
+        ge.unit_type = UnitType::King;
         pushEvent(ge);
     }
 

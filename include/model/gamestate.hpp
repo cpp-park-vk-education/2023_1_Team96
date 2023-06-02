@@ -33,7 +33,7 @@ class Game {
    private:
     // unique_ptr<Client> client_;
 
-    unique_ptr<SFMLWindow> monitor_;
+    unique_ptr<IMonitor> monitor_;
     unique_ptr<InputHandler> handler_;
     unique_ptr<Field> field_;
 
