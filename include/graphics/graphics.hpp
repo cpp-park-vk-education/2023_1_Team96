@@ -9,7 +9,7 @@ using std::vector;
 class IModel;
 class IFieldModel;
 
-enum ModelType { B_MODEL, K_MODEL, S_MODEL };
+enum ModelType { B_MODEL, K_MODEL, S_MODEL, T_MODEL, H_MODEL};
 
 class IMonitor {
    public:
@@ -40,8 +40,9 @@ class IFieldModel : public IModel {
 class IObjectModel : public IModel {
    public:
     virtual void Move(sf::Vector2u pos) = 0;
-    virtual void Attack() = 0;
-    virtual void GetDamage(int damage) = 0;
+    virtual void Attack(sf::Vector2u pos) = 0;
+    virtual void GetDamage(int damage, sf::Vector2u pos_) = 0;
+    virtual void Blow() = 0;
 
     virtual ~IObjectModel() {}
 };

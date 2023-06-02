@@ -26,8 +26,7 @@ bool Field::CreateUnit(UnitType type, bool is_mine,
             uf.AddObjectActions(objects_[i]);
 
             return true;
-        } break;
-
+        }
         case UnitType::K: {
             shared_ptr<GameObject> king = std::make_shared<GameObject>(
                 nullptr, is_mine, std::move(model), pos);
@@ -47,7 +46,25 @@ bool Field::CreateUnit(UnitType type, bool is_mine,
             objects_[i] = king;
 
             return true;
-        } break;
+        }
+        case UnitType::T: {
+            objects_[i] = std::make_shared<GameObject>(nullptr, is_mine,
+                                                       std::move(model), pos);
+
+            UnitFactory uf(1, 1, 5, 1, 2);
+            uf.AddObjectActions(objects_[i]);
+
+            return true;
+        }
+        case UnitType::H: {
+            objects_[i] = std::make_shared<GameObject>(nullptr, is_mine,
+                                                       std::move(model), pos);
+
+            UnitFactory uf(1, 1, 5, 1, 2);
+            uf.AddObjectActions(objects_[i]);
+
+            return true;
+        }
     }
     return false;
 }
@@ -74,7 +91,8 @@ bool Field::MoveObject(Vector2u from, Vector2u to) {
 };
 
 void Field::DeleteObject(Vector2u pos) {
-    objects_[pos.y * w_ + pos.x] = nullptr;
+    // objects_[pos.y * w_ + pos.x] = nullptr;
+    objects_[pos.y * w_ + pos.x]->GetModel().Blow();
 };
 
 void Field::Draw() {
@@ -82,4 +100,5 @@ void Field::Draw() {
     for (std::shared_ptr<GameObject> object : objects_) {
         if (object) object->GetModel().Draw();
     }
+    model_->ShowStat();
 };

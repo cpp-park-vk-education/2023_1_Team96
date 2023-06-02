@@ -26,13 +26,17 @@ class Field {
     uint index(Vector2u pos) { return pos.y * w_ + pos.x; }
 
    public:
-    Field(uint h, uint w, unique_ptr<SFMLFieldModel>&& f_model)
+    Field(uint h, uint w)
         : h_(h),
           w_(w),
           objects_(h * w),
-          model_(std::move(f_model)),
           my_king_pos_({0, 0}),
           enemy_king_pos_({0, 0}) {}
+
+    void setModel(unique_ptr<SFMLFieldModel>&& f_model)
+    {
+        model_ = std::move(f_model);
+    }
 
     bool CreateUnit(UnitType type, bool is_mine, unique_ptr<IObjectModel> model,
                     sf::Vector2u pos);
@@ -43,6 +47,8 @@ class Field {
 
     void Choose(const sf::Vector2u& pos) { model_->SetCurrent(pos); }
     void Reset() { model_->ResetCurrent(); }
+    void ShowStat(Stats stat) { model_->SetStat(stat); }
+    void HideStat() { model_->HideStat(); }
 
     shared_ptr<GameObject> GetObject(Vector2u pos) {
         return objects_[index(pos)];

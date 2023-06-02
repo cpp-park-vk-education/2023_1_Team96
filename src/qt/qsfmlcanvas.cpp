@@ -66,6 +66,12 @@ void QSFMLCanvas::keyPressEvent(QKeyEvent* e) {
         pushEvent(ge);
     }
 
+    if (e->key() == Qt::Key_2) {
+        GameEvent ge{EventType::CREATE_OBJECT};
+        ge.unit_type = K;
+        pushEvent(ge);
+    }
+
     if (e->key() == Qt::Key_Return) {
         GameEvent ge{EventType::FINISH};
         pushEvent(ge);
@@ -73,7 +79,7 @@ void QSFMLCanvas::keyPressEvent(QKeyEvent* e) {
 
     if (e->key() == Qt::Key_Space) {
         GameEvent ge{EventType::FINISH};
-        ge.cmds = "c b 2 3 c k 2 4 c b 2 5 e";
+        ge.cmds = "c b 3 4 c b 3 6 c b 2 5 c b 4 5 c k 3 5 e";
         pushEvent(ge);
     }
 

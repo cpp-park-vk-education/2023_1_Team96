@@ -4,7 +4,7 @@
 #include <sstream>
 
 const uint FIELD_HEIGHT = 9;
-const uint FILED_WIDTH = 15;
+const uint FILED_WIDTH = 16;
 
 const char CREATE_COMMAND = 'c';
 const char MOVE_COMMAND = 'm';
@@ -14,7 +14,7 @@ const char END_COMMAND = 'e';
 const char B_UNIT = 'b';
 const char K_UNIT = 'k';
 
-const uint UNITS_NUM = 3;
+const uint UNITS_NUM = 5;
 const uint STEP_POINTS = 999;
 
 using std::cout, std::endl;
@@ -30,8 +30,38 @@ Game::Game(unique_ptr<SFMLWindow> monitor, unique_ptr<InputHandler> handler)
       commands_() {
     uint rows = FIELD_HEIGHT;
     uint cols = FILED_WIDTH;
-    unique_ptr<SFMLFieldModel> field_model = monitor_->GetFieldModel();
-    field_ = std::make_unique<Field>(rows, cols, move(field_model));
+
+    std::vector<std::string> map = {
+        "000000000000000", "0h    t        h", "0             0",
+        "0             0", "0             0",  "0             0",
+        "0             0", "0             0",  "000000000000000",
+    };
+
+    field_ = std::make_unique<Field>(rows, cols);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            char obj = map[i][j];
+
+            switch (obj) {
+                case 't':
+                    field_->CreateUnit(T, true,
+                                       std::move(monitor_->GetModel(
+                                           ModelType::T_MODEL, turn_)),
+                                       sf::Vector2u{j, i});
+                    map[i][j] = ' ';
+                    break;
+                case 'h':
+                    field_->CreateUnit(H, true,
+                                       std::move(monitor_->GetModel(
+                                           ModelType::H_MODEL, turn_)),
+                                       sf::Vector2u{j, i});
+                    map[i][j] = ' ';
+                    break;
+            }
+        }
+    }
+    unique_ptr<SFMLFieldModel> field_model = monitor_->GetFieldModel(map);
+    field_->setModel(move(field_model));
 }
 
 void Game::StartGame() {
@@ -72,7 +102,9 @@ void Game::HandleCommands(string commands) {
 
                 field_->CreateUnit(
                     unit_type, turn_,
-                    std::move(monitor_->GetModel(model_type, turn_)), pos);
+                    std::move(monitor_->GetModel(
+                        model_type == B ? ModelType::B_MODEL : K_MODEL, turn_)),
+                    pos);
             } break;
 
             case ATTACK_COMMAND: {
@@ -210,7 +242,9 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
 
     ModelType model_type = GetModelType(ev.unit_type);
     bool created = field_->CreateUnit(
-        ev.unit_type, turn_, std::move(monitor_->GetModel(model_type, turn_)),
+        ev.unit_type, turn_,
+        std::move(monitor_->GetModel(
+            model_type == B ? ModelType::B_MODEL : K_MODEL, turn_)),
         cell_);
 
     if (!created) {
@@ -257,6 +291,7 @@ State Game::OnStepChose(GameEvent ev) {
     if (!chosen_object->IsMine()) return State::ERROR;
 
     field_->Choose(ev.cords);
+    // field_->ShowStat(Stats{5,1,2});
 
     obj_ = chosen_object;
     cell_ = ev.cords;
@@ -287,6 +322,7 @@ State Game::OnUnitChosenChose(GameEvent ev) {
         cout << "Step points are over!" << endl;
         return State::ERROR;
     }
+    field_->HideStat();
 
     sf::Vector2u chosen_cell = {ev.cords.x, ev.cords.y};
 
@@ -319,13 +355,13 @@ State Game::OnUnitChosenChose(GameEvent ev) {
             attacked_obj->CanDoAction(ActionType::GET_ATTACKED, attack.get())) {
             attacked_obj->DoAction(ActionType::GET_ATTACKED, attack.get());
 
-            if (attack->is_dead) field_->DeleteObject(chosen_cell);
-
             commands_ += AttackObjectCmd(cell_, chosen_cell);
             field_->Reset();
-            obj_->GetModel().Attack();
+            obj_->GetModel().Attack(chosen_cell);
+            attacked_obj->GetModel().GetDamage(100, cell_);
             --points_;
 
+            if (attack->is_dead) field_->DeleteObject(chosen_cell);
             cout << "Attacked!" << endl;
             return State::STEP;
         } else {
@@ -337,6 +373,7 @@ State Game::OnUnitChosenChose(GameEvent ev) {
 
 State Game::OnUnitChosenUnchose(GameEvent ev) {
     field_->Reset();
+    field_->HideStat();
     cout << "Unit unchosen!" << endl;
     return State::STEP;
 }

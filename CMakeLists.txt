@@ -6,7 +6,7 @@ find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 set(QT_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/qt)
-qt_wrap_cpp(Tactics_H ${QT_HEADER_DIR}/chooseopponentform.h ${QT_HEADER_DIR}/entranceform.h ${QT_HEADER_DIR}/gameform.h ${QT_HEADER_DIR}/mainwindow.h)
+qt5_wrap_cpp(Tactics_H ${QT_HEADER_DIR}/chooseopponentform.h ${QT_HEADER_DIR}/entranceform.h ${QT_HEADER_DIR}/gameform.h ${QT_HEADER_DIR}/mainwindow.h)
 
 set(QT_UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ui)
 set(QT_UI_COMPILED ${CMAKE_CURRENT_BINARY_DIR}/ui)
@@ -25,10 +25,10 @@ file(GLOB GRAPHICS "src/graphics/*.cpp")
 file(GLOB INPUT "src/input/*.cpp")
 file(GLOB SERVER "src/server/*.cpp")
 file(GLOB QT "src/qt/*.cpp")
-set(Tactics_SRC main.cpp ${QT} ${GRAPHICS} ${MODEL} ${INPUT} ${SERVER})
+set(Tactics_SRC main.cpp ${QT} ${GRAPHICS} ${MODEL} ${INPUT} #${SERVER} 
+)
 
 add_executable(tactics ${Tactics_SRC} ${Tactics_H})
-add_executable(server server.cpp ${SERVER})
 
 target_link_libraries(tactics Qt5::Widgets)
 
@@ -36,7 +36,6 @@ target_include_directories(tactics PUBLIC include/qt)
 target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
 
-target_link_libraries(tactics sfml-window sfml-graphics sfml-network)
-target_link_libraries(server sfml-network)
+target_link_libraries(tactics sfml-window sfml-graphics)
 
 include_directories(include)

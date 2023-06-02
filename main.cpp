@@ -1,5 +1,3 @@
-#include "graphics/sfml_monitor.hpp"
-#include "input/sfml_input.hpp"
 #include "mainwindow.h"
 #include "qt/gameform.h"
 
