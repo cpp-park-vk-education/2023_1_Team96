@@ -97,7 +97,7 @@ void GameForm::onStartTimerClick() {
     game_widget->show();
 
     std::unique_ptr<SFMLWindow> monitor = std::make_unique<SFMLWindow>(
-        "Tactics", sf::Vector2u{945, 567}, game_widget->winId());
+        "Tactics", sf::Vector2u{945, 567}, game_widget->winId(), CONFIG);
 
     std::unique_ptr<SFMLWindowHandler> handler =
         std::make_unique<SFMLWindowHandler>(monitor->GetWindow());
