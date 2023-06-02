@@ -30,7 +30,6 @@ class Field {
         : h_(h),
           w_(w),
           objects_(h * w),
-          model_(std::move(f_model)),
           my_king_pos_({0, 0}),
           enemy_king_pos_({0, 0}) {}
 
