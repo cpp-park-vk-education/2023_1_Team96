@@ -17,7 +17,7 @@ bool Field::CreateUnit(UnitType type, bool is_mine,
     uint i = index(pos);
 
     switch (type) {
-        case UnitType::B: {
+        case UnitType::Warrior: {
             objects_[i] = std::make_shared<GameObject>(nullptr, is_mine,
                                                        std::move(model), pos);
 
@@ -27,7 +27,7 @@ bool Field::CreateUnit(UnitType type, bool is_mine,
 
             return true;
         }
-        case UnitType::K: {
+        case UnitType::King: {
             shared_ptr<GameObject> king = std::make_shared<GameObject>(
                 nullptr, is_mine, std::move(model), pos);
 
@@ -47,8 +47,17 @@ bool Field::CreateUnit(UnitType type, bool is_mine,
 
             return true;
         }
-        case UnitType::T: {
-            objects_[i] = std::make_shared<GameObject>(nullptr, is_mine,
+    }
+    return false;
+}
+
+bool Field::CreateEnvObject(EnvType type,
+                       unique_ptr<IObjectModel> model, sf::Vector2u pos) {
+    uint i = index(pos);
+
+    switch (type) {
+        case EnvType::Trees: {
+            objects_[i] = std::make_shared<GameObject>(nullptr, false,
                                                        std::move(model), pos);
 
             UnitFactory uf(1, 1, 5, 1, 2);
@@ -56,8 +65,8 @@ bool Field::CreateUnit(UnitType type, bool is_mine,
 
             return true;
         }
-        case UnitType::H: {
-            objects_[i] = std::make_shared<GameObject>(nullptr, is_mine,
+        case EnvType::Camp: {
+            objects_[i] = std::make_shared<GameObject>(nullptr, false,
                                                        std::move(model), pos);
 
             UnitFactory uf(1, 1, 5, 1, 2);

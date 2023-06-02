@@ -1,10 +1,11 @@
 #pragma once
 
-enum UnitType {
-    B,
-    K,
-    T,
-    H,
+enum class UnitType {
+    Warrior, King,
+};
+
+enum class EnvType {
+    Trees, Camp,
 };
 
 const unsigned int CELL_TEXTURE_SIZE = 63;
