@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.0.0)
 project(Tactics VERSION 1.0.1)
 
 find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
-
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 set(QT_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/qt)
 qt5_wrap_cpp(Tactics_H ${QT_HEADER_DIR}/chooseopponentform.h ${QT_HEADER_DIR}/entranceform.h ${QT_HEADER_DIR}/gameform.h ${QT_HEADER_DIR}/mainwindow.h)
@@ -20,22 +20,25 @@ foreach(QT_UI IN LISTS QT_WINDOWS)
     execute_process(COMMAND uic -o ${QT_UI_OUT_FILE} ${QT_UIS_FULL_NAME_WITH_EXT})
 endforeach()
 
+file(GLOB GRAPHICS_SRC "src/graphics/*.cpp")
+file(GLOB GRAPHICS_H "include/graphics/*.hpp")
+add_library(graphics ${GRAPHICS_SRC} ${GRAPHICS_H})
+target_link_libraries(graphics nlohmann_json::nlohmann_json)
+target_link_libraries(graphics sfml-window sfml-graphics)
+target_include_directories(graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 file(GLOB MODEL "src/model/*.cpp")
-file(GLOB GRAPHICS "src/graphics/*.cpp")
 file(GLOB INPUT "src/input/*.cpp")
 file(GLOB SERVER "src/server/*.cpp")
 file(GLOB QT "src/qt/*.cpp")
-set(Tactics_SRC main.cpp ${QT} ${GRAPHICS} ${MODEL} ${INPUT} #${SERVER} 
+set(Tactics_SRC main.cpp ${QT} ${MODEL} ${INPUT} #${SERVER} 
 )
 
 add_executable(tactics ${Tactics_SRC} ${Tactics_H})
 
-target_link_libraries(tactics Qt5::Widgets)
-
 target_include_directories(tactics PUBLIC include/qt)
 target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
-
-target_link_libraries(tactics sfml-window sfml-graphics)
+target_link_libraries(tactics graphics)
 
 include_directories(include)

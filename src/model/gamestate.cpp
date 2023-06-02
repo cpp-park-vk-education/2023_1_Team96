@@ -292,7 +292,6 @@ State Game::OnStepChose(GameEvent ev) {
     if (!chosen_object->IsMine()) return State::ERROR;
 
     field_->Choose(ev.cords);
-    // field_->ShowStat(Stats{5,1,2});
 
     obj_ = chosen_object;
     cell_ = ev.cords;

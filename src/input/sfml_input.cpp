@@ -15,8 +15,8 @@ GameEvent SFMLWindowHandler::Handle() {
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     GameEvent ge{EventType::CHOSE};
-                    ge.cords = sf::Vector2u{static_cast<int>(event.mouseButton.x / 63),
-                                            static_cast<int>(event.mouseButton.y / 63)};
+                    ge.cords = sf::Vector2u{static_cast<uint>(event.mouseButton.x / 63),
+                                            static_cast<uint>(event.mouseButton.y / 63)};
                     return ge;
                 }
                 break;

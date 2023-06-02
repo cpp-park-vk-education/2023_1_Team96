@@ -12,13 +12,13 @@
 using sf::Vector2u;
 using std::string;
 
-enum Animation {
-    HIT,
-    HURT,
-    RUN,
-    NONE,
-    BLOW,
-    OPEN,
+enum class Animation {
+    Hit,
+    Hurt,
+    Run,
+    None,
+    Blow,
+    Open,
 };
 
 struct Stats {
@@ -37,6 +37,9 @@ class SFMLModel : public IModel {
     virtual ~SFMLModel() {}
 
     SFMLModel(sf::RenderWindow &target) : target_(target) {}
+    void SetOrigin(float x, float y) { sprite.setOrigin(x, y); }
+    void SetTextRect(const sf::IntRect& rect) { sprite.setTextureRect(rect); }
+    void Scale(float x, float y) { sprite.scale(x,y); }
 };
 
 class InfoBar : SFMLModel {
@@ -55,7 +58,7 @@ class InfoBar : SFMLModel {
     }
     void open() {
         anim_frame_ = 0;
-        anim = Animation::OPEN;
+        anim = Animation::Open;
     }
     void close() { anim_frame_ = 0; }
 };
@@ -119,7 +122,7 @@ class SFMLUnitModel : public SFMLModel, public IObjectModel {
     void Move(sf::Vector2u to) override;
     void Attack(sf::Vector2u pos_) override;
     void GetDamage(int damage, sf::Vector2u pos_) override;
-    void Blow() { anim = BLOW; };
+    void Blow() { anim = Animation::Blow; };
 };
 
 class SFMLWarriorModel : public SFMLUnitModel {
@@ -152,16 +155,6 @@ class SFMLEnvModel : public SFMLModel, public IObjectModel {
     void Blow() override {};
 };
 
-class SFMLCampModel : public SFMLEnvModel {
-   public:
-    SFMLCampModel(sf::RenderWindow &window, const sf::Texture &texture);
-};
-
-class SFMLTreesModel : public SFMLEnvModel {
-   public:
-    SFMLTreesModel(sf::RenderWindow &window, const sf::Texture &texture);
-};
-
 class SFMLWindow : public IMonitor {
    private:
     sf::RenderWindow m_window_;
@@ -175,8 +168,8 @@ class SFMLWindow : public IMonitor {
 
    public:
     SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
-               sf::WindowHandle winhandle);
-    bool loadResources();
+               sf::WindowHandle win_descriptor, const std::string& config_path);
+    bool loadResources(const std::string& config_path);
 
     void Prepare() { m_window_.clear(); }
     void Draw() { m_window_.display(); }

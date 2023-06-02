@@ -1,0 +1,15 @@
+{
+    "static_dir" : "../static/",
+    "units": "unit.png",
+    "map": "map.png",
+    "font": "arkhip.ttf",
+    "animation_time": 0.1,
+    "info_bar":      [ 24, 47, 74, 90],
+    "basic_cell":      [ 26, 219],
+    "border_cell":     [ 26, 298],
+    "broken_cell":     [ 106, 219],
+    "my_warrior":      [ 1, 1],
+    "enemy_warrior":   [ 1, 65],
+    "my_king":         [ 193, 1],
+    "enemy_king":      [ 193, 65]
+}
