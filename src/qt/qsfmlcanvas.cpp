@@ -56,7 +56,13 @@ void QSFMLCanvas::keyPressEvent(QKeyEvent* e) {
 
     if (e->key() == Qt::Key_1) {
         GameEvent ge{EventType::CREATE_OBJECT};
-        ge.unit_type = B;
+        ge.unit_type = UnitType::B;
+        pushEvent(ge);
+    }
+
+    if (e->key() == Qt::Key_2) {
+        GameEvent ge{EventType::CREATE_OBJECT};
+        ge.unit_type = UnitType::K;
         pushEvent(ge);
     }
 
@@ -67,13 +73,13 @@ void QSFMLCanvas::keyPressEvent(QKeyEvent* e) {
 
     if (e->key() == Qt::Key_Space) {
         GameEvent ge{EventType::FINISH};
-        ge.cmds = "c b 2 3 c b 2 4 c b 2 5 e";
+        ge.cmds = "c b 2 3 c k 2 4 c b 2 5 e";
         pushEvent(ge);
     }
 
     if (e->key() == Qt::Key_Shift) {
         GameEvent ge{EventType::FINISH};
-        ge.cmds = "a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 e";
+        ge.cmds = "a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 a 2 4 3 4 e";
         pushEvent(ge);
     }
 }

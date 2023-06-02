@@ -64,6 +64,7 @@ void Game::HandleCommands(string commands) {
                 char unit_type_c = 0;
                 command_stream >> unit_type_c;
                 UnitType unit_type = MapUnitType(unit_type_c);
+                ModelType model_type = GetModelType(unit_type);
 
                 sf::Vector2u pos{0, 0};
                 command_stream >> pos.x >> pos.y;
@@ -71,8 +72,7 @@ void Game::HandleCommands(string commands) {
 
                 field_->CreateUnit(
                     unit_type, turn_,
-                    std::move(monitor_->GetModel(ModelType::B_MODEL, turn_)),
-                    pos);
+                    std::move(monitor_->GetModel(model_type, turn_)), pos);
             } break;
 
             case ATTACK_COMMAND: {
@@ -136,24 +136,18 @@ char Game::MapUnitType(UnitType type) {
             break;
     }
 }
-
-bool Game::AmIWon() {
-    auto objects = field_->Objects();
-    int alive_enemy_objects = 0;
-    for (auto obj : objects) {
-        if (obj != nullptr && !obj->IsMine()) alive_enemy_objects++;
+ModelType Game::GetModelType(UnitType unit_type) {
+    switch (unit_type) {
+        case UnitType::B:
+            return ModelType::B_MODEL;
+        case UnitType::K:
+            return ModelType::K_MODEL;
     }
-    return alive_enemy_objects == 0;
 }
 
-bool Game::AmILost() {
-    auto objects = field_->Objects();
-    int alive_my_objects = 0;
-    for (auto obj : objects) {
-        if (obj != nullptr && obj->IsMine()) alive_my_objects++;
-    }
-    return alive_my_objects == 0;
-}
+bool Game::AmIWon() { return field_->GetEnemyKing() == nullptr; }
+
+bool Game::AmILost() { return field_->GetMyKing() == nullptr; }
 
 string Game::CreateObjectCmd(UnitType type, sf::Vector2u pos) {
     std::stringstream cmd;
@@ -214,9 +208,14 @@ State Game::OnPrepareCreateObject(GameEvent ev) {
     if (!field_->IsMyPart(cell_)) return State::ERROR;
     if (!field_->IsEmpty(cell_)) return State::ERROR;
 
-    field_->CreateUnit(ev.unit_type, turn_,
-                       std::move(monitor_->GetModel(ModelType::B_MODEL, turn_)),
-                       cell_);
+    ModelType model_type = GetModelType(ev.unit_type);
+    bool created = field_->CreateUnit(
+        ev.unit_type, turn_, std::move(monitor_->GetModel(model_type, turn_)),
+        cell_);
+
+    if (!created) {
+        return State::ERROR;
+    }
 
     commands_ += CreateObjectCmd(ev.unit_type, cell_);
     field_->Reset();
@@ -316,7 +315,8 @@ State Game::OnUnitChosenChose(GameEvent ev) {
         }
 
         shared_ptr<GameObject> attacked_obj = field_->GetObject(chosen_cell);
-        if (obj_ != attacked_obj && attacked_obj->CanDoAction(ActionType::GET_ATTACKED, attack.get())) {
+        if (obj_ != attacked_obj &&
+            attacked_obj->CanDoAction(ActionType::GET_ATTACKED, attack.get())) {
             attacked_obj->DoAction(ActionType::GET_ATTACKED, attack.get());
 
             if (attack->is_dead) field_->DeleteObject(chosen_cell);

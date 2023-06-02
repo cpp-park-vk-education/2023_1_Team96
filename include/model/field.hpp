@@ -20,11 +20,19 @@ class Field {
     unsigned int h_, w_;
     unique_ptr<SFMLFieldModel> model_;
 
+    sf::Vector2u my_king_pos_;
+    sf::Vector2u enemy_king_pos_;
+
     uint index(Vector2u pos) { return pos.y * w_ + pos.x; }
 
    public:
     Field(uint h, uint w, unique_ptr<SFMLFieldModel>&& f_model)
-        : h_(h), w_(w), objects_(h * w), model_(std::move(f_model)) {}
+        : h_(h),
+          w_(w),
+          objects_(h * w),
+          model_(std::move(f_model)),
+          my_king_pos_({0, 0}),
+          enemy_king_pos_({0, 0}) {}
 
     bool CreateUnit(UnitType type, bool is_mine, unique_ptr<IObjectModel> model,
                     sf::Vector2u pos);
@@ -42,6 +50,9 @@ class Field {
 
     bool MoveObject(Vector2u from, Vector2u to);
     void DeleteObject(Vector2u pos);
+
+    shared_ptr<GameObject> GetMyKing() { return GetObject(my_king_pos_); }
+    shared_ptr<GameObject> GetEnemyKing() { return GetObject(enemy_king_pos_); }
 
     void Draw();
 
