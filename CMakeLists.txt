@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.0.0)
 project(Tactics VERSION 1.0.1)
 
 find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
-
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 set(QT_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/qt)
 qt5_wrap_cpp(Tactics_H ${QT_HEADER_DIR}/chooseopponentform.h ${QT_HEADER_DIR}/entranceform.h ${QT_HEADER_DIR}/gameform.h ${QT_HEADER_DIR}/mainwindow.h)
@@ -35,7 +35,7 @@ target_link_libraries(tactics Qt5::Widgets)
 target_include_directories(tactics PUBLIC include/qt)
 target_include_directories(tactics PUBLIC ${QT_UI_COMPILED})
 target_link_libraries(tactics Qt5::Widgets)
-
 target_link_libraries(tactics sfml-window sfml-graphics)
+target_link_libraries(tactics nlohmann_json::nlohmann_json)
 
 include_directories(include)

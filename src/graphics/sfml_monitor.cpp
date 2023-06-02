@@ -2,22 +2,49 @@
 
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 const char FIELD_BORDER = '0';
 const char CELL = ' ';
 const char BROKEN_CELL = 'b';
 
-const string IMG_PATH = "../static/";
+const string CONFIG = "../config.json";
 
 const double ANIMATION_FRAME_TIME = 0.01;
 
 SFMLWindow::SFMLWindow(const string &l_title, const sf::Vector2u &l_size,
-                       sf::WindowHandle winhandle) {
+                       sf::WindowHandle win_descriptor) {
     loadResources();
     m_windowTitle_ = l_title;
     m_windowSize_ = l_size;
-    m_window_.create(winhandle);
+    m_window_.create(win_descriptor);
 }
+
+bool SFMLWindow::loadResources() {
+    std::ifstream config_fs(CONFIG);
+    json config = json::parse(config_fs);
+    config_fs.close();
+
+    std::string static_dir, units, map, font;
+    config.at("static_dir").get_to(static_dir);
+    config.at("units").get_to(units);
+    config.at("map").get_to(map);
+    config.at("font").get_to(font);
+
+    sf::Image unit_image;
+    if (!unit_image.loadFromFile(static_dir + units)) return false;
+    if (!units_set_.loadFromImage(unit_image)) return false;
+
+    sf::Image map_image;
+    if (!map_image.loadFromFile(static_dir + map)) return false;
+    if (!tile_set_.loadFromImage(map_image)) return false;
+
+    if (!font_.loadFromFile(static_dir + font)) return false;
+    return true;
+};
 
 std::unique_ptr<IObjectModel> SFMLWindow::GetModel(ModelType type,
                                                    bool is_mine) {
@@ -42,19 +69,6 @@ std::unique_ptr<IFieldModel> SFMLWindow::GetFieldModel(
     return std::make_unique<SFMLFieldModel>(m_window_, tile_set_, font_, map);
 };
 
-bool SFMLWindow::loadResources() {
-    sf::Image unit_image;
-    if (!unit_image.loadFromFile(IMG_PATH + "unit.png")) return false;
-    if (!units_set_.loadFromImage(unit_image)) return false;
-
-    sf::Image map_image;
-    if (!map_image.loadFromFile(IMG_PATH + "map.png")) return false;
-    if (!tile_set_.loadFromImage(map_image)) return false;
-
-    sf::Font font;
-    if (!font_.loadFromFile(IMG_PATH + "arkhip.ttf")) return false;
-    return true;
-};
 
 InfoBar::InfoBar(sf::RenderWindow &window, const sf::Font &font,
                  const sf::Texture &texture, sf::IntRect tRect)
